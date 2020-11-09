@@ -75,7 +75,7 @@ export class AppComponent {
   }
 
   public diagramNodeData: Array<go.ObjectData> = [
-    { key: 'ROOT', color: 'red' },
+    { key: 'ROOT', color: 'lightblue' },
   ];
   public diagramLinkData: Array<go.ObjectData> = [
     // { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: '1' },
@@ -123,10 +123,10 @@ export class AppComponent {
     return palette;
   }
   public paletteNodeData: Array<go.ObjectData> = [
-    { key: 'ROOT', color: 'red'},
-    { key: 'AND', color: 'green' },
-    { key: 'OR', color: 'lightblue' },
-    { key: 'LEAF', color: 'lightgreen' }
+    { key: 'ROOT', color: 'lightblue'},
+    { key: 'AND', color: 'red' },
+    { key: 'OR', color: 'lightgreen' },
+    { key: 'LEAF', color: 'lightgrey' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
     {  }
