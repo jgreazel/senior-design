@@ -58,7 +58,7 @@ export class AppComponent {
             )
         },
         $(go.Panel, 'Auto',
-          $(go.Shape, 'RoundedRectangle', { stroke: null },
+          $(go.Shape, 'triangle', { stroke: null },
             new go.Binding('fill', 'color')
           ),
           $(go.TextBlock, { margin: 8 },
@@ -130,12 +130,13 @@ export class AppComponent {
     return palette;
   }
   public paletteNodeData: Array<go.ObjectData> = [
-    { key: 'AND', color: 'firebrick' },
-    { key: 'OR', color: 'blueviolet' },
-    { key: 'LEAF', color: 'blueviolet' }
+    { key: 'ROOT', color: 'red'},
+    { key: 'AND', color: 'green' },
+    { key: 'OR', color: 'lightblue' },
+    { key: 'LEAF', color: 'lightgreen' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
-    { from: 'AND', to: 'OR' }
+    {  }
   ];
   public paletteModelData = { prop: 'val' };
   public paletteDivClassName = 'myPaletteDiv';
