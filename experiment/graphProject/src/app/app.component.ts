@@ -58,7 +58,7 @@ export class AppComponent {
             )
         },
         $(go.Panel, 'Auto',
-          $(go.Shape, 'triangle', { stroke: null },
+          $(go.Shape, 'circle', { stroke: null },
             new go.Binding('fill', 'color')
           ),
           $(go.TextBlock, { margin: 8 },
@@ -66,8 +66,8 @@ export class AppComponent {
         ),
         // Ports
         makePort('t', go.Spot.TopCenter),
-        makePort('l', go.Spot.Left),
-        makePort('r', go.Spot.Right),
+        // makePort('l', go.Spot.Left),
+        // makePort('r', go.Spot.Right),
         makePort('b', go.Spot.BottomCenter)
       );
 
@@ -75,17 +75,10 @@ export class AppComponent {
   }
 
   public diagramNodeData: Array<go.ObjectData> = [
-    { key: 'Alpha', color: 'lightblue', arr: [1, 2] },
-    { key: 'Beta', color: 'orange' },
-    { key: 'Gamma', color: 'lightgreen' },
-    { key: 'Delta', color: 'pink' }
+    { key: 'ROOT', color: 'red' },
   ];
   public diagramLinkData: Array<go.ObjectData> = [
-    { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: '1' },
-    { key: -2, from: 'Alpha', to: 'Gamma', fromPort: 'b', toPort: 't' },
-    { key: -3, from: 'Beta', to: 'Beta' },
-    { key: -4, from: 'Gamma', to: 'Delta', fromPort: 'r', toPort: 'l' },
-    { key: -5, from: 'Delta', to: 'Alpha', fromPort: 't', toPort: 'r' }
+    // { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: '1' },
   ];
   public diagramDivClassName: string = 'myDiagramDiv';
   public diagramModelData = { prop: 'value' };
