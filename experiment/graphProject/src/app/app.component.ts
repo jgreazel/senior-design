@@ -18,9 +18,20 @@ export class AppComponent {
 
   // TEST POST METHOD
   computeNodeData(){
-    this.apiService.computeNodeData(this.diagramNodeData)
+    let rando = Math.random();
+    this.apiService.computeNodeData({"id": rando, "key": rando, "color": "red"})
       .subscribe(data => {
         console.log(data);
+      })
+  }
+
+  // TEST GET METHOD
+  getNodeData(){
+    this.apiService.getNodeData()
+      .subscribe(data => {
+        console.log('nodes',data);
+        this.diagramNodeData = data
+        // this.diagramLinkData = null;
       })
   }
 

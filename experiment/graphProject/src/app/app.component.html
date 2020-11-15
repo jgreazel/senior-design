@@ -2,14 +2,18 @@
 
 <div class="left box">
   <button (click)="computeNodeData()">Compute</button>
+  <button (click)="getNodeData()">Get Nodes</button>
 </div>
 
 <h2><br></h2>
 
 <div class="left">
   Palette
-  <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName' [nodeDataArray]='paletteNodeData'
-    [linkDataArray]='paletteLinkData' [modelData]='paletteModelData' (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'></gojs-palette>
+  <gojs-palette 
+    #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName' [nodeDataArray]='paletteNodeData'
+    [linkDataArray]='paletteLinkData' [modelData]='paletteModelData' 
+    (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
+  </gojs-palette>
 </div>
 
 <div class="left">

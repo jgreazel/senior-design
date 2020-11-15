@@ -1,0 +1,37 @@
+{
+  "nodeData": [
+    {
+      "key": "ROOT",
+      "color": "lightblue"
+    },
+    {
+      "key": "AND",
+      "color": "red"
+    },
+    {
+      "key": "OR",
+      "color": "lightgreen"
+    },
+    {
+      "key": "LEAF",
+      "color": "lightgrey"
+    },
+    {
+      "key": "LEAF2",
+      "color": "lightgrey"
+    },
+    {
+      "key": "LEAF3",
+      "color": "lightgrey"
+    },
+    {
+      "key": "LEAF4",
+      "color": "lightgrey"
+    },
+    {
+      "id": 0.8837654987550925,
+      "key": 0.8837654987550925,
+      "color": "red"
+    }
+  ]
+}

@@ -4,6 +4,10 @@ import { Observable } from 'rxjs';
 import * as go from 'gojs';
 
 
+// for running fake backend: 
+// make sure json server is installed globally with 'npm i -g json-server'
+// after navigationg to app folder, start server with 'json-sever --watch db.json'
+
 @Injectable({providedIn:'root'})
 export class ApiService {
  
@@ -13,16 +17,17 @@ export class ApiService {
   }
  
     // example of a get request
-//   getPeople(): Observable<Person[]> {
-//     console.log('getPeople '+this.baseURL + 'people')
-//     return this.http.get<Person[]>(this.baseURL + 'people')
-//   }
+  getNodeData(): Observable<Array<go.ObjectData>> {
+    console.log('get sample nodes '+ this.baseURL + 'nodeData')
+    return this.http.get<Array<go.ObjectData>>(this.baseURL + 'nodeData')
+  }
  
-  computeNodeData(nodeData: Array<go.ObjectData>): Observable<any> {
+  // example of a post request
+  computeNodeData(nodeData: go.ObjectData): Observable<any> {
     const headers = { 'content-type': 'application/json'}  
     const body=JSON.stringify(nodeData);
     console.log(body)
-    return this.http.post(this.baseURL + 'nodeData', body,{'headers':headers})
+    return this.http.post(this.baseURL + 'nodeData', body, {'headers':headers})
   }
  
 }
