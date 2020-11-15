@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { GojsAngularModule } from 'gojs-angular';
@@ -15,6 +16,7 @@ import { InspectorComponent } from './inspector/inspector.component';
   imports: [
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     GojsAngularModule
   ],
   providers: [],

@@ -1,12 +1,20 @@
-<h1>GoJS / Angular - Components Sample</h1>
+<h1>CySec Game</h1>
+
+<div class="left box">
+  <button (click)="computeNodeData()">Compute</button>
+  <button (click)="getNodeData()">Get Nodes</button>
+</div>
+
+<h2><br></h2>
 
 <div class="left">
   Palette
-  <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName' [nodeDataArray]='paletteNodeData'
-    [linkDataArray]='paletteLinkData' [modelData]='paletteModelData' (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'></gojs-palette>
+  <gojs-palette 
+    #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName' [nodeDataArray]='paletteNodeData'
+    [linkDataArray]='paletteLinkData' [modelData]='paletteModelData' 
+    (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
+  </gojs-palette>
 </div>
-
-
 
 <div class="left">
   Diagram
@@ -17,15 +25,8 @@
 </div>
 
 <div class="left">
-  Overview
-  <gojs-overview #myOverview [initOverview]='initOverview' [divClassName]='oDivClassName' [observedDiagram]='observedDiagram'></gojs-overview>
-</div>
-
-
-<div class="left">
   <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
 </div>
-
 
 <div class="clear left box">
   <h3>Links in app data</h3>

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from '@ang
 import * as go from 'gojs';
 import { DataSyncService, DiagramComponent, PaletteComponent } from 'gojs-angular';
 import * as _ from 'lodash';
+import { ApiService } from './api.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,26 @@ export class AppComponent {
 
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
+
+
+  // TEST POST METHOD
+  computeNodeData(){
+    let rando = Math.random();
+    this.apiService.computeNodeData({"id": rando, "key": rando, "color": "red"})
+      .subscribe(data => {
+        console.log(data);
+      })
+  }
+
+  // TEST GET METHOD
+  getNodeData(){
+    this.apiService.getNodeData()
+      .subscribe(data => {
+        console.log('nodes',data);
+        this.diagramNodeData = data
+        // this.diagramLinkData = null;
+      })
+  }
 
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
@@ -58,7 +79,7 @@ export class AppComponent {
             )
         },
         $(go.Panel, 'Auto',
-          $(go.Shape, 'RoundedRectangle', { stroke: null },
+          $(go.Shape, 'circle', { stroke: null },
             new go.Binding('fill', 'color')
           ),
           $(go.TextBlock, { margin: 8 },
@@ -66,8 +87,8 @@ export class AppComponent {
         ),
         // Ports
         makePort('t', go.Spot.TopCenter),
-        makePort('l', go.Spot.Left),
-        makePort('r', go.Spot.Right),
+        // makePort('l', go.Spot.Left),
+        // makePort('r', go.Spot.Right),
         makePort('b', go.Spot.BottomCenter)
       );
 
@@ -75,17 +96,10 @@ export class AppComponent {
   }
 
   public diagramNodeData: Array<go.ObjectData> = [
-    { key: 'Alpha', color: 'lightblue', arr: [1, 2] },
-    { key: 'Beta', color: 'orange' },
-    { key: 'Gamma', color: 'lightgreen' },
-    { key: 'Delta', color: 'pink' }
+    { key: 'ROOT', color: 'lightblue' },
   ];
   public diagramLinkData: Array<go.ObjectData> = [
-    { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: '1' },
-    { key: -2, from: 'Alpha', to: 'Gamma', fromPort: 'b', toPort: 't' },
-    { key: -3, from: 'Beta', to: 'Beta' },
-    { key: -4, from: 'Gamma', to: 'Delta', fromPort: 'r', toPort: 'l' },
-    { key: -5, from: 'Delta', to: 'Alpha', fromPort: 't', toPort: 'r' }
+    // { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: '1' },
   ];
   public diagramDivClassName: string = 'myDiagramDiv';
   public diagramModelData = { prop: 'value' };
@@ -130,12 +144,13 @@ export class AppComponent {
     return palette;
   }
   public paletteNodeData: Array<go.ObjectData> = [
-    { key: 'AND', color: 'firebrick' },
-    { key: 'OR', color: 'blueviolet' },
-    { key: 'LEAF', color: 'blueviolet' }
+    { key: 'ROOT', color: 'lightblue'},
+    { key: 'AND', color: 'red' },
+    { key: 'OR', color: 'lightgreen' },
+    { key: 'LEAF', color: 'lightgrey' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
-    { from: 'AND', to: 'OR' }
+    {  }
   ];
   public paletteModelData = { prop: 'val' };
   public paletteDivClassName = 'myPaletteDiv';
@@ -151,7 +166,8 @@ export class AppComponent {
     this.paletteModelData = DataSyncService.syncModelData(changes, this.paletteModelData);
   };
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  //added dependecy injection for api service
+  constructor(private cdr: ChangeDetectorRef, private apiService: ApiService) { }
 
   // Overview Component testing
   public oDivClassName = 'myOverviewDiv';
