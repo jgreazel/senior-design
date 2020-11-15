@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from '@ang
 import * as go from 'gojs';
 import { DataSyncService, DiagramComponent, PaletteComponent } from 'gojs-angular';
 import * as _ from 'lodash';
+import { ApiService } from './api.service';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,15 @@ export class AppComponent {
 
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
+
+
+  // TEST POST METHOD
+  computeNodeData(){
+    this.apiService.computeNodeData(this.diagramNodeData)
+      .subscribe(data => {
+        console.log(data);
+      })
+  }
 
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
@@ -145,7 +155,8 @@ export class AppComponent {
     this.paletteModelData = DataSyncService.syncModelData(changes, this.paletteModelData);
   };
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  //added dependecy injection for api service
+  constructor(private cdr: ChangeDetectorRef, private apiService: ApiService) { }
 
   // Overview Component testing
   public oDivClassName = 'myOverviewDiv';
