@@ -1,0 +1,6 @@
+<form action="/json-enter/" method="post">
+  {% csrf_token %}
+    <label for="json_enter"> JSON </label>
+    <input id="json_enter" type="text" name="json_enter" value="{{ json }}">
+    <input type="submit" value="OK">
+</form>
