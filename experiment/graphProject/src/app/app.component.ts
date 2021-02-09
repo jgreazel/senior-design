@@ -40,14 +40,11 @@ export class AppComponent {
 
     const $ = go.GraphObject.make;
     const dia = $(go.Diagram, {
-      'undoManager.isEnabled': true,
-      model: $(go.GraphLinksModel,
-        {
-          linkToPortIdProperty: 'toPort',
-          linkFromPortIdProperty: 'fromPort',
-          linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
-        }
-      )
+      initialAutoScale: go.Diagram.UniformToFill,
+      layout: $(go.TreeLayout,
+        { comparer: go.LayoutVertex.standardComparer, 
+        angle: 90}) // have the comparer sort by numbers as well as letters
+      // other properties are set by the layout function, defined below
     });
 
     dia.commandHandler.archetypeGroupData = { key: 'Group', isGroup: true };
