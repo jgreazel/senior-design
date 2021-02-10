@@ -43,6 +43,7 @@ export class AppComponent {
       initialAutoScale: go.Diagram.UniformToFill,
       layout: $(go.TreeLayout,
         { comparer: go.LayoutVertex.standardComparer, 
+          
         angle: 90}) // have the comparer sort by numbers as well as letters
       // other properties are set by the layout function, defined below
     });
@@ -123,7 +124,7 @@ export class AppComponent {
     // define the Node template
     palette.nodeTemplate =
       $(go.Node, 'Auto',
-        $(go.Shape, 'Triangle',
+        $(go.Shape, 'Square',
           {
             stroke: null
           },
