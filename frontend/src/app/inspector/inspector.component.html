@@ -1,5 +1,5 @@
 <form *ngIf='selectedNode' (ngSubmit)='onCommitForm()'>
-  Key: {{ selectedNode.data.key }}
+  <p>Key: <input style="display: inline;" name='key' disabled [(ngModel)]='data.key' /></p>
   <p>Risk Index: <input style="display: inline;" name='ri' [(ngModel)]='data.riskIndex' /></p>
   <p>Text: <input style="display: inline;" name='text' [(ngModel)]='data.text'/></p>
   <button type="submit">Commit</button>

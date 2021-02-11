@@ -20,7 +20,7 @@ export class AppComponent {
   // TEST POST METHOD
   computeNodeData(){
     const rando = Math.random();
-    this.apiService.computeNodeData({id: rando, key: rando, color: 'red'})
+    this.apiService.computeNodeData({key: rando, color: 'red'})
       .subscribe(data => {
         console.log(data);
       })
@@ -32,7 +32,7 @@ export class AppComponent {
       .subscribe(data => {
         console.log('nodes',data);
         this.diagramNodeData = data
-        this.diagramLinkData = null;
+        this.diagramLinkData = data;
       })
   }
 
@@ -41,6 +41,7 @@ export class AppComponent {
 
     const $ = go.GraphObject.make;
     const dia = $(go.Diagram, {
+      'undoManager.isEnabled': true,
       initialAutoScale: go.Diagram.UniformToFill,
       model: $(go.GraphLinksModel,
           {
@@ -87,8 +88,6 @@ export class AppComponent {
         ),
         // Ports
         makePort('t', go.Spot.TopCenter),
-        // makePort('l', go.Spot.Left),
-        // makePort('r', go.Spot.Right),
         makePort('b', go.Spot.BottomCenter)
       );
 
@@ -96,11 +95,12 @@ export class AppComponent {
   }
 
   public diagramNodeData: Array<go.ObjectData> = [
-    { key: 'ROOT',  text: 'placeholderText', color: 'lightblue' },
+
   ];
   public diagramLinkData: Array<go.ObjectData> = [
-     { key: -1, from: 'Leaf', to: 'Root', fromPort: 'r', toPort: '1' },
+
   ];
+
   public diagramDivClassName: string = 'myDiagramDiv';
   public diagramModelData = { prop: 'value' };
   public skipsDiagramUpdate = false;
@@ -137,15 +137,13 @@ export class AppComponent {
       );
 
     palette.model = $(go.GraphLinksModel,
-      {
-        linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
-      });
-
+        {
+          linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+        });
     return palette;
   }
 
   public paletteNodeData: Array<go.ObjectData> = [
-    { key: 'ROOT', text: 'placeholderText', riskIndex: '0', color: 'lightblue'},
     { key: 'AND', text: 'placeholderText', riskIndex: '0', color: 'red' },
     { key: 'OR', text: 'placeholderText', riskIndex: '0', color: 'lightgreen' },
     { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'lightgrey' }
@@ -170,13 +168,13 @@ export class AppComponent {
 
   // added dependecy injection for api service
   constructor(private cdr: ChangeDetectorRef, private apiService: ApiService) { }
+
   public observedDiagram = null;
 
   // currently selected node; for inspector
   public selectedNode: go.Node | null = null;
 
   public ngAfterViewInit() {
-
     if (this.observedDiagram) return;
     this.observedDiagram = this.myDiagramComponent.diagram;
     this.cdr.detectChanges(); // IMPORTANT: without this, Angular will throw ExpressionChangedAfterItHasBeenCheckedError (dev mode only)
