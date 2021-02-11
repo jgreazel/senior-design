@@ -44,7 +44,7 @@ export class AppComponent {
       var cpOffset = (4 * ((Math.sqrt(2) - 1) / 3)) * .5;
       var fig = new go.PathFigure(0, 0, true);
       geo.add(fig);
-      h = 2*h;
+      h = 2 * h;
       w = 1.5 * w;
       // The gate body
       fig.add(new go.PathSegment(go.PathSegment.Line, .5 * w, 0));
@@ -54,14 +54,15 @@ export class AppComponent {
         (.5 + cpOffset) * w, h));
       fig.add(new go.PathSegment(go.PathSegment.Line, 0, h).close());
 
-      geo.rotate(270, w/3, h/2)
+      geo.rotate(270, w / 3, h / 2)
+      geo.offset(0, -h/6)
       geo.spot1 = go.Spot.TopLeft;
       geo.spot2 = go.Spot.BottomRight;
       return geo;
     })
 
     //create custom shape for or-gate
-    go.Shape.defineFigureGenerator("OrGate", function(shape, w, h) {
+    go.Shape.defineFigureGenerator("OrGate", function (shape, w, h) {
       var geo = new go.Geometry();
       var radius = .5;
       var cpOffset = (4 * ((Math.sqrt(2) - 1) / 3)) * radius;
@@ -69,15 +70,16 @@ export class AppComponent {
       var centery = .5;
       var fig = new go.PathFigure(0, 0, true);
       geo.add(fig);
-      h=2*h;
-      w=1.5*w;
-    
+      h = 2 * h;
+      w = 1.5 * w;
+
       fig.add(new go.PathSegment(go.PathSegment.Bezier, w, .5 * h, (centerx + cpOffset + cpOffset) * w, (centery - radius) * h,
         .8 * w, (centery - cpOffset) * h));
       fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, h, .8 * w, (centery + cpOffset) * h,
         (centerx + cpOffset + cpOffset) * w, (centery + radius) * h));
       fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, .25 * w, .75 * h, .25 * w, .25 * h).close());
-      geo.rotate(270, w/3, h/2)
+      geo.rotate(270, w / 3, h / 2)
+      geo.offset(0, -h/6)
       geo.spot1 = new go.Spot(.2, .25);
       geo.spot2 = new go.Spot(.75, .75);
       return geo;
@@ -168,20 +170,22 @@ export class AppComponent {
 
     palette.nodeTemplate =
       $(go.Node, 'Auto',
-        // $(go.Shape, {
-        //   figure: 'circle', strokeWidth: 3, fill: 'white'
-        // }, new go.Binding('figure', 'shape'), new go.Binding('stroke', 'color')),
-        // $(go.TextBlock, {
-        //   font: 'bold 20px Courier', textAlign: 'center', margin: 10
-        // }, new go.Binding('text', 'key')),
         $(go.Panel, "Vertical",
-        $(go.Shape, {
-          figure: 'circle', strokeWidth: 3, fill: 'white',  alignment: go.Spot.Bottom, stretch: go.GraphObject.Horizontal,
-          height: 40, width: 45 , margin: 20
-        }, new go.Binding('figure', 'shape'), new go.Binding('stroke', 'color')),
-        $(go.TextBlock, {
-          font: 'bold 20px Courier', margin: 5
-        }, new go.Binding('text', 'key')))
+          $(go.Shape, {
+            figure: 'circle',
+            strokeWidth: 3,
+            fill: 'white',
+            alignment: go.Spot.Bottom,
+            stretch: go.GraphObject.Horizontal,
+            height: 40,
+            width: 45,
+            margin: 20
+          },new go.Binding('figure', 'shape'),
+            new go.Binding('stroke', 'color')),
+          $(go.TextBlock, {
+            font: 'bold 20px Courier',
+            margin: 5
+          },new go.Binding('text', 'key')))
       )
 
     palette.model = $(go.GraphLinksModel,
@@ -195,7 +199,7 @@ export class AppComponent {
     { key: 'ROOT', color: 'lightblue' },
     { key: 'AND', color: 'red', shape: 'andgate' },
     { key: 'OR', color: 'lightgreen', shape: 'orgate' },
-    { key: 'LEAF', color: 'black' }
+    { key: 'LEAF', color: 'black', shape: 'square' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
     {}
