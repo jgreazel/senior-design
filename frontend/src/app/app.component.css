@@ -12,16 +12,16 @@ h1 {
 
 .myDiagramDiv {
   background: whitesmoke;
-  width: 700px;
+  width: 1000px;
   height: 500px;
-  border: 1px solid black;
+  border: 2px solid black;
 }
 
 .myPaletteDiv {
-  background: lightcyan;
-  border: 1px solid navy;
-  width: 200px;
-  height: 300px;
+  background: whitesmoke;
+  border: 2px solid black;
+  width: 100px;
+  height: 500px;
 }
 
 .myOverviewDiv {
