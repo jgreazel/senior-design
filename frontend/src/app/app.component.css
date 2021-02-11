@@ -18,10 +18,10 @@ h1 {
 }
 
 .myPaletteDiv {
-  background: lightcyan;
+  background: whitesmoke;
   border: 1px solid navy;
   width: 200px;
-  height: 300px;
+  height: 600px;
 }
 
 .myOverviewDiv {
