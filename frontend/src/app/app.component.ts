@@ -18,9 +18,9 @@ export class AppComponent {
 
 
   // TEST POST METHOD
-  computeNodeData(){
+  computeNodeData() {
     const rando = Math.random();
-    this.apiService.computeNodeData({key: rando, color: 'red'})
+    this.apiService.computeNodeData({ key: rando, color: 'red' })
       .subscribe(data => {
         console.log(data);
       })
@@ -56,7 +56,7 @@ export class AppComponent {
       fig.add(new go.PathSegment(go.PathSegment.Line, 0, h).close());
 
       geo.rotate(270, w / 3, h / 2)
-      geo.offset(0, -h/6)
+      geo.offset(0, -h / 6)
       geo.spot1 = go.Spot.TopLeft;
       geo.spot2 = go.Spot.BottomRight;
       return geo;
@@ -80,7 +80,7 @@ export class AppComponent {
         (centerx + cpOffset + cpOffset) * w, (centery + radius) * h));
       fig.add(new go.PathSegment(go.PathSegment.Bezier, 0, 0, .25 * w, .75 * h, .25 * w, .25 * h).close());
       geo.rotate(270, w / 3, h / 2)
-      geo.offset(0, -h/6)
+      geo.offset(0, -h / 6)
       geo.spot1 = new go.Spot(.2, .25);
       geo.spot2 = new go.Spot(.75, .75);
       return geo;
@@ -91,17 +91,17 @@ export class AppComponent {
       'undoManager.isEnabled': true,
       initialAutoScale: go.Diagram.UniformToFill,
       model: $(go.GraphLinksModel,
-          {
-            linkToPortIdProperty: 'toPort',
-            linkFromPortIdProperty: 'fromPort',
-            linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
-          }
+        {
+          linkToPortIdProperty: 'toPort',
+          linkFromPortIdProperty: 'fromPort',
+          linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+        }
       )
     });
 
     dia.commandHandler.archetypeGroupData = { key: 'Group', isGroup: true };
 
-    const makePort = function(id: string, spot: go.Spot) {
+    const makePort = function (id: string, spot: go.Spot) {
       return $(go.Shape, 'Circle',
         {
           opacity: .5,
@@ -114,29 +114,53 @@ export class AppComponent {
 
     // define the Node template
     dia.nodeTemplate =
-      $(go.Node, 'Spot',
-        {
-          contextMenu:
-            $('ContextMenu',
-              $('ContextMenuButton',
-                $(go.TextBlock, 'Group'),
-                { click: function (e, obj) { e.diagram.commandHandler.groupSelection(); } },
-                new go.Binding('visible', '', function (o) {
-                  return o.diagram.selection.count > 1;
-                }).ofObject())
-            )
-        },
-        $(go.Panel, 'Auto',
-          $(go.Shape, { stroke: null },
-            new go.Binding('fill', 'color')
-          ),
-          $(go.TextBlock, { margin: 10 },
-            new go.Binding('text', 'text'))
-        ),
-        // Ports
+      // $(go.Node, 'Spot',
+      //   {
+      //     contextMenu:
+      //       $('ContextMenu',
+      //         $('ContextMenuButton',
+      //           $(go.TextBlock, 'Group'),
+      //           { click: function (e, obj) { e.diagram.commandHandler.groupSelection(); } },
+      //           new go.Binding('visible', '', function (o) {
+      //             return o.diagram.selection.count > 1;
+      //           }).ofObject())
+      //       )
+      //   },
+      //   $(go.Panel, 'Auto',
+      //     $(go.Shape, { stroke: null },
+      //       new go.Binding('fill', 'color')
+      //     ),
+      //     $(go.TextBlock, { margin: 10 },
+      //       new go.Binding('text', 'text'))
+      //   ),
+      //   // Ports
+      // makePort('t', go.Spot.TopCenter),
+      // makePort('b', go.Spot.BottomCenter)
+      // );
+
+      /**
+       * Brought this over from my palette nodeTemplate to assure shapes stay consistent
+       * I'll leave the previous nodeTemplate there commented out, incase I ditched something important
+       */
+      $(go.Node, 'Auto',
+        $(go.TextBlock, {
+          font: '15px Courier'
+        }, new go.Binding('text').makeTwoWay()),
+        $(go.Panel, "Vertical",
+          $(go.Shape, {
+            figure: 'circle',
+            strokeWidth: 3,
+            fill: 'white',
+            alignment: go.Spot.Bottom,
+            stretch: go.GraphObject.Horizontal,
+            height: 40,
+            width: 45,
+            margin: 20
+          }, new go.Binding('figure', 'shape'),
+            new go.Binding('stroke', 'color'))),
         makePort('t', go.Spot.TopCenter),
         makePort('b', go.Spot.BottomCenter)
-      );
+      )
 
     return dia;
   }
@@ -180,18 +204,18 @@ export class AppComponent {
             height: 40,
             width: 45,
             margin: 20
-          },new go.Binding('figure', 'shape'),
+          }, new go.Binding('figure', 'shape'),
             new go.Binding('stroke', 'color')),
           $(go.TextBlock, {
             font: 'bold 20px Courier',
             margin: 5
-          },new go.Binding('text', 'key')))
+          }, new go.Binding('text', 'key')))
       )
 
     palette.model = $(go.GraphLinksModel,
-        {
-          linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
-        });
+      {
+        linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+      });
     return palette;
   }
 
