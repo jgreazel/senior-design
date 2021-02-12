@@ -8,8 +8,9 @@ import { ApiService } from './api.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.ShadowDom
 })
+
 export class AppComponent {
 
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
@@ -18,8 +19,8 @@ export class AppComponent {
 
   // TEST POST METHOD
   computeNodeData(){
-    let rando = Math.random();
-    this.apiService.computeNodeData({"id": rando, "key": rando, "color": "red"})
+    const rando = Math.random();
+    this.apiService.computeNodeData({key: rando, color: 'red'})
       .subscribe(data => {
         console.log(data);
       })
@@ -31,7 +32,7 @@ export class AppComponent {
       .subscribe(data => {
         console.log('nodes',data);
         this.diagramNodeData = data
-        // this.diagramLinkData = null;
+        this.diagramLinkData = data;
       })
   }
 
@@ -40,16 +41,18 @@ export class AppComponent {
 
     const $ = go.GraphObject.make;
     const dia = $(go.Diagram, {
+      'undoManager.isEnabled': true,
       initialAutoScale: go.Diagram.UniformToFill,
-      layout: $(go.TreeLayout,
-        { comparer: go.LayoutVertex.standardComparer, 
-          
-        angle: 90}) // have the comparer sort by numbers as well as letters
-      // other properties are set by the layout function, defined below
+      model: $(go.GraphLinksModel,
+          {
+            linkToPortIdProperty: 'toPort',
+            linkFromPortIdProperty: 'fromPort',
+            linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+          }
+      )
     });
 
     dia.commandHandler.archetypeGroupData = { key: 'Group', isGroup: true };
-
 
     const makePort = function(id: string, spot: go.Spot) {
       return $(go.Shape, 'Circle',
@@ -77,16 +80,14 @@ export class AppComponent {
             )
         },
         $(go.Panel, 'Auto',
-          $(go.Shape, 'circle', { stroke: null },
+          $(go.Shape, { stroke: null },
             new go.Binding('fill', 'color')
           ),
-          $(go.TextBlock, { margin: 8 },
-            new go.Binding('text', 'key'))
+          $(go.TextBlock, { margin: 10 },
+            new go.Binding('text', 'text'))
         ),
         // Ports
         makePort('t', go.Spot.TopCenter),
-        // makePort('l', go.Spot.Left),
-        // makePort('r', go.Spot.Right),
         makePort('b', go.Spot.BottomCenter)
       );
 
@@ -94,11 +95,12 @@ export class AppComponent {
   }
 
   public diagramNodeData: Array<go.ObjectData> = [
-    { key: 'ROOT', color: 'lightblue' },
+
   ];
   public diagramLinkData: Array<go.ObjectData> = [
-    // { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: '1' },
+
   ];
+
   public diagramDivClassName: string = 'myDiagramDiv';
   public diagramModelData = { prop: 'value' };
   public skipsDiagramUpdate = false;
@@ -135,21 +137,21 @@ export class AppComponent {
       );
 
     palette.model = $(go.GraphLinksModel,
-      {
-        linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
-      });
-
+        {
+          linkKeyProperty: 'key'  // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+        });
     return palette;
   }
+
   public paletteNodeData: Array<go.ObjectData> = [
-    { key: 'ROOT', color: 'lightblue'},
-    { key: 'AND', color: 'red' },
-    { key: 'OR', color: 'lightgreen' },
-    { key: 'LEAF', color: 'lightgrey' }
+    { key: 'AND', text: 'placeholderText', riskIndex: '0', color: 'red' },
+    { key: 'OR', text: 'placeholderText', riskIndex: '0', color: 'lightgreen' },
+    { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'lightgrey' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
-    {  }
+
   ];
+
   public paletteModelData = { prop: 'val' };
   public paletteDivClassName = 'myPaletteDiv';
   public skipsPaletteUpdate = false;
@@ -164,23 +166,15 @@ export class AppComponent {
     this.paletteModelData = DataSyncService.syncModelData(changes, this.paletteModelData);
   };
 
-  //added dependecy injection for api service
+  // added dependecy injection for api service
   constructor(private cdr: ChangeDetectorRef, private apiService: ApiService) { }
 
-  // Overview Component testing
-  public oDivClassName = 'myOverviewDiv';
-  public initOverview(): go.Overview {
-    const $ = go.GraphObject.make;
-    const overview = $(go.Overview);
-    return overview;
-  }
   public observedDiagram = null;
 
   // currently selected node; for inspector
   public selectedNode: go.Node | null = null;
 
   public ngAfterViewInit() {
-
     if (this.observedDiagram) return;
     this.observedDiagram = this.myDiagramComponent.diagram;
     this.cdr.detectChanges(); // IMPORTANT: without this, Angular will throw ExpressionChangedAfterItHasBeenCheckedError (dev mode only)
@@ -198,7 +192,6 @@ export class AppComponent {
         appComp.selectedNode = null;
       }
     });
-
   } // end ngAfterViewInit
 
 
