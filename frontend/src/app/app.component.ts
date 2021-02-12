@@ -196,22 +196,12 @@ export class AppComponent {
   }
 
   public paletteNodeData: Array<go.ObjectData> = [
-<<<<<<< HEAD
-    { key: 'ROOT', color: 'lightblue' },
-    { key: 'AND', color: 'red', shape: 'andgate' },
-    { key: 'OR', color: 'lightgreen', shape: 'orgate' },
-    { key: 'LEAF', color: 'black', shape: 'square' }
-  ];
-  public paletteLinkData: Array<go.ObjectData> = [
-    {}
-=======
-    { key: 'AND', text: 'placeholderText', riskIndex: '0', color: 'red' },
-    { key: 'OR', text: 'placeholderText', riskIndex: '0', color: 'lightgreen' },
-    { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'lightgrey' }
+    { key: 'AND', text: 'placeholderText', riskIndex: '0', color: 'red', shape: 'andgate' },
+    { key: 'OR', text: 'placeholderText', riskIndex: '0', color: 'lightgreen', shape: 'orgate' },
+    { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'lightgrey', shape: 'square' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
 
->>>>>>> 5385d034d997e963b1f002d280a1b46447452c30
   ];
 
   public paletteModelData = { prop: 'val' };
