@@ -149,7 +149,7 @@ export class AppComponent {
     { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'lightgrey' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
-    { }
+
   ];
 
   public paletteModelData = { prop: 'val' };
