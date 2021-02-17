@@ -3,6 +3,9 @@ import * as go from 'gojs';
 import { DataSyncService, DiagramComponent, PaletteComponent } from 'gojs-angular';
 import * as _ from 'lodash';
 import { ApiService } from './api.service';
+import { FileSaverService } from 'ngx-filesaver';
+import { FileSaverOptions } from 'file-saver';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -243,7 +246,11 @@ export class AppComponent {
   };
 
   // added dependecy injection for api service
-  constructor(private cdr: ChangeDetectorRef, private apiService: ApiService) { }
+  constructor(
+    private cdr: ChangeDetectorRef, 
+    private apiService: ApiService,
+    private httpClient: HttpClient,
+    private fileSaverService: FileSaverService) { }
 
   public observedDiagram = null;
 
@@ -287,6 +294,32 @@ export class AppComponent {
       this.skipsDiagramUpdate = false;
       this.diagramNodeData[index] = _.cloneDeep(newNodeData);
     }
+  }
+
+  text: string;
+  fileName: string;
+  options: FileSaverOptions = {
+    autoBom: false,
+  };
+
+  onDown(type: string, fromRemote: boolean) {
+    const fileName = `save.${type}`;
+    if (fromRemote) {
+      this.httpClient.get(`assets/files/demo.${type}`, {
+        observe: 'response',
+        responseType: 'blob'
+      }).subscribe(res => {
+        this.fileSaverService.save(res.body, fileName);
+      });
+      return;
+    }
+    this.text = "";
+    this.text += JSON.stringify(this.diagramNodeData);
+    this.text += ",\n" + JSON.stringify(this.diagramLinkData);
+    console.log(this.diagramNodeData);
+    const fileType = this.fileSaverService.genType(fileName);
+    const txtBlob = new Blob([this.text], { type: fileType });
+    this.fileSaverService.save(txtBlob, fileName, null, this.options);
   }
 
 
