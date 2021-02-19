@@ -23,12 +23,12 @@ body {
 }
 
 .myDiagramDiv {
-  background: #999999;
+  background: #ffffff;
   width: 100%;
   height: 500px;
   border: none;
   outline: none;
-  box-shadow: 0 0 0 1.5px #06224d;
+  box-shadow: 0 0 1px 1px #d2d4d6;
   border-radius: 4px;
 }
 
