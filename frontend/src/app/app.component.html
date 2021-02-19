@@ -3,41 +3,35 @@
 </section>
 
 
-<div class="left box">
-  <button (click)="getNodeData()">Get Nodes</button>
-</div>
+
 
 <h2><br></h2>
 
 <div class="left">
   Palette
-  <gojs-palette 
-    #myPalette [initPalette]='initPalette'
-    [divClassName]='paletteDivClassName'
-    [nodeDataArray]='paletteNodeData'
-    [linkDataArray]='paletteLinkData'
-    [modelData]='paletteModelData'
-    (modelChange)='paletteModelChange($event)'
-    [skipsPaletteUpdate]='skipsPaletteUpdate'>
+  <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
+    [nodeDataArray]='paletteNodeData' [linkDataArray]='paletteLinkData' [modelData]='paletteModelData'
+    (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
   </gojs-palette>
   <section>
+    
     <div class="example-button-row">
-      <button mat-raised-button>Analyze</button>
+      <button mat-raised-button (click)="getNodeData()">Get Nodes
+      </button>
+      <button mat-raised-button (click)="analyzeData()">Analyze</button>
+
     </div>
+
+
+
   </section>
 </div>
 
 <div class="left">
   Diagram
-  <gojs-diagram
-    #myDiagram
-    [initDiagram]='initDiagram'
-    [nodeDataArray]='diagramNodeData'
-    [linkDataArray]='diagramLinkData'
-    [divClassName]='diagramDivClassName'
-    [modelData]='diagramModelData'
-    [skipsDiagramUpdate]='skipsDiagramUpdate'
-    (modelChange)='diagramModelChange($event)'>
+  <gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='diagramNodeData'
+    [linkDataArray]='diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='diagramModelData'
+    [skipsDiagramUpdate]='skipsDiagramUpdate' (modelChange)='diagramModelChange($event)'>
   </gojs-diagram>
 </div>
 
@@ -62,4 +56,3 @@
     </li>
   </ul>
 </div>
-

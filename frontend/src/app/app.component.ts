@@ -18,10 +18,11 @@ export class AppComponent {
 
 
   // TEST POST METHOD
-  computeNodeData() {
+  analyzeData() {
     const rando = Math.random();
-    this.apiService.computeNodeData({ key: rando, color: 'red' })
+    this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
       .subscribe(data => {
+        //do something meaningful with data here once connected to BE
         console.log(data);
       })
   }
