@@ -1,21 +1,26 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet">
 
-<h1 class='title'>CySec Game</h1>
-<div class="button-row">
-  <button (click)="getNodeData()">
-    <mat-icon>save</mat-icon>
-    <div class="button-text">Save</div>
-  </button>
-  <button (click)="analyzeData()">
-    <mat-icon>analytics</mat-icon>
-    <div class="button-text">Analyze</div>
-  </button>
-</div>
+<h1 class='title'>CySec Game
+  <div class="button-row">
+    <button (click)="getNodeData()">
+      <mat-icon>save</mat-icon>
+      <div class="button-text">Save</div>
+    </button>
+    <button (click)="analyzeData()">
+      <mat-icon>analytics</mat-icon>
+      <div class="button-text">Analyze</div>
+    </button>
+  </div>
+</h1>
+
 <h2><br></h2>
+
+
+<app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
+
 
 <div class="page-section">
   <div class="left">
-    Palette
     <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
       [nodeDataArray]='paletteNodeData' [linkDataArray]='paletteLinkData' [modelData]='paletteModelData'
       (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
@@ -30,11 +35,7 @@
     </gojs-diagram>
   </div>
 
-  <div class="left">
-    <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
-  </div>
-
-  <div class="clear left box">
+  <!-- <div class="clear left box">
     <h3>Links in app data</h3>
     <ul>
       <li *ngFor="let ld of diagramLinkData">
@@ -50,5 +51,5 @@
         Node Key: {{nd.key}}, Text: {{nd.text}}, Risk Index: {{nd.probability}}
       </li>
     </ul>
-  </div>
+  </div> -->
 </div>

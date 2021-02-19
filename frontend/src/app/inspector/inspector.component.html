@@ -1,7 +1,10 @@
 <form *ngIf='selectedNode' (ngSubmit)='onCommitForm()'>
-  <p>Key: <input style="display: inline;" name='key' disabled [(ngModel)]='data.key' /></p>
-  <p>Probability (decimal): <input style="display: inline;" name='probability' [(ngModel)]='data.probability' /></p>
-  <p>Text: <input style="display: inline;" name='text' [(ngModel)]='data.text'/></p>
+  <label for="key">Key:</label>
+  <input name='key' id="key" disabled [(ngModel)]='data.key' />
+  <label for="probability">Probability (decimal): </label>
+  <input name='probability' key="probability" [(ngModel)]='data.probability' />
+  <label for="text" >Text: </label>
+  <input name='text' key="text" [(ngModel)]='data.text' />
   <button type="submit">Save Changes</button>
 </form>
 
