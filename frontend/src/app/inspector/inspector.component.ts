@@ -1,7 +1,6 @@
 
 import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import * as go from 'gojs';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 
 @Component({
