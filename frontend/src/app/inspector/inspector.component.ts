@@ -1,5 +1,5 @@
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import * as go from 'gojs';
 
 
@@ -14,7 +14,7 @@ export class InspectorComponent {
   public data = {
     key: null,
     text: null,
-    riskIndex: null,
+    probability: null,
   };
 
   @Input()
@@ -29,12 +29,12 @@ export class InspectorComponent {
     if (node) {
       this._selectedNode = node;
       this.data.key = this._selectedNode.data.key;
-      this.data.riskIndex = this._selectedNode.data.riskIndex;
+      this.data.probability = this._selectedNode.data.probability;
       this.data.text = this._selectedNode.data.text;
     } else {
       this._selectedNode = null;
       this.data.key = null;
-      this.data.riskIndex = null;
+      this.data.probability = null;
       this.data.text = null;
     }
   }
