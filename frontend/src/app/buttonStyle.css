@@ -8,6 +8,7 @@
 .example-button-row {
     display: table-cell;
     width: 490px;
+    margin: 30px;
 }
 
 .example-button-row .mat-button-base {
