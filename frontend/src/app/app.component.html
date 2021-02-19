@@ -1,58 +1,54 @@
-<section class="mat-typography">
-  <h1 class = '.mat-display-1'>CySec Game</h1>
-</section>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet">
 
-
-
-
+<h1 class='title'>CySec Game</h1>
+<div class="button-row">
+  <button (click)="getNodeData()">
+    <mat-icon>save</mat-icon>
+    <div class="button-text">Save</div>
+  </button>
+  <button (click)="analyzeData()">
+    <mat-icon>analytics</mat-icon>
+    <div class="button-text">Analyze</div>
+  </button>
+</div>
 <h2><br></h2>
 
-<div class="left">
-  Palette
-  <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
-    [nodeDataArray]='paletteNodeData' [linkDataArray]='paletteLinkData' [modelData]='paletteModelData'
-    (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
-  </gojs-palette>
-  <section>
-    
-    <div class="example-button-row">
-      <button mat-raised-button (click)="getNodeData()">Get Nodes
-      </button>
-      <button mat-raised-button (click)="analyzeData()">Analyze</button>
+<div class="page-section">
+  <div class="left">
+    Palette
+    <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
+      [nodeDataArray]='paletteNodeData' [linkDataArray]='paletteLinkData' [modelData]='paletteModelData'
+      (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
+    </gojs-palette>
+  </div>
 
-    </div>
+  <div class="clear left">
+    Diagram
+    <gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='diagramNodeData'
+      [linkDataArray]='diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='diagramModelData'
+      [skipsDiagramUpdate]='skipsDiagramUpdate' (modelChange)='diagramModelChange($event)'>
+    </gojs-diagram>
+  </div>
 
+  <div class="left">
+    <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
+  </div>
 
+  <div class="clear left box">
+    <h3>Links in app data</h3>
+    <ul>
+      <li *ngFor="let ld of diagramLinkData">
+        Link Key: {{ld.key}}, To: {{ld.to}}, From: {{ ld.from }}
+      </li>
+    </ul>
+  </div>
 
-  </section>
-</div>
-
-<div class="left">
-  Diagram
-  <gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='diagramNodeData'
-    [linkDataArray]='diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='diagramModelData'
-    [skipsDiagramUpdate]='skipsDiagramUpdate' (modelChange)='diagramModelChange($event)'>
-  </gojs-diagram>
-</div>
-
-<div class="left">
-  <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
-</div>
-
-<div class="clear left box">
-  <h3>Links in app data</h3>
-  <ul>
-    <li *ngFor="let ld of diagramLinkData">
-      Link Key: {{ld.key}}, To: {{ld.to}}, From: {{ ld.from }}
-    </li>
-  </ul>
-</div>
-
-<div class="left box">
-  <h3>Nodes in app data</h3>
-  <ul>
-    <li *ngFor="let nd of diagramNodeData">
-      Node Key: {{nd.key}}, Text: {{nd.text}}, Risk Index: {{nd.probability}}
-    </li>
-  </ul>
+  <div class="left box">
+    <h3>Nodes in app data</h3>
+    <ul>
+      <li *ngFor="let nd of diagramNodeData">
+        Node Key: {{nd.key}}, Text: {{nd.text}}, Risk Index: {{nd.probability}}
+      </li>
+    </ul>
+  </div>
 </div>

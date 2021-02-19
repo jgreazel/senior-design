@@ -3,6 +3,7 @@ import * as go from 'gojs';
 import { DataSyncService, DiagramComponent, PaletteComponent } from 'gojs-angular';
 import * as _ from 'lodash';
 import { ApiService } from './api.service';
+import {MatIconModule} from '@angular/material/icon';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,13 @@ import { ApiService } from './api.service';
   encapsulation: ViewEncapsulation.ShadowDom
 })
 
+
+
 export class AppComponent {
 
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
+
 
 
   // TEST POST METHOD
@@ -36,6 +40,8 @@ export class AppComponent {
         this.diagramLinkData = data;
       })
   }
+
+
 
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
@@ -204,7 +210,7 @@ export class AppComponent {
             stretch: go.GraphObject.Horizontal,
             height: 40,
             width: 45,
-            margin: 20
+            margin: new go.Margin(70, 25, 10, 25),
           }, new go.Binding('figure', 'shape'),
             new go.Binding('stroke', 'color')),
           $(go.TextBlock, {
@@ -222,8 +228,8 @@ export class AppComponent {
 
   public paletteNodeData: Array<go.ObjectData> = [
     { key: 'AND', text: 'placeholderText', riskIndex: '0', color: 'red', shape: 'andgate' },
-    { key: 'OR', text: 'placeholderText', riskIndex: '0', color: 'lightgreen', shape: 'orgate' },
-    { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'lightgrey', shape: 'square' }
+    { key: 'OR', text: 'placeholderText', riskIndex: '0', color: 'green', shape: 'orgate' },
+    { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'blue', shape: 'square' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
 

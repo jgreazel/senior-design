@@ -10,6 +10,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSliderModule } from '@angular/material/slider';
 import {MatListModule} from '@angular/material/list';
 import {MatFormFieldModule} from "@angular/material/form-field";
+import { MatIconModule} from '@angular/material/icon';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
     GojsAngularModule,
     BrowserAnimationsModule,
     MatListModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
