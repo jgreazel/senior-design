@@ -9,7 +9,7 @@ class Scenario:
     Attributes
     ----------
     probabilty : float
-        probability of scenario occurring
+        probability of scenario occurring, 0-1
     nodeKeys : [str]
         list of node keys, each key represented by a string
 
@@ -30,9 +30,7 @@ class Scenario:
         nodeKeys : [str]
             The list of nodes in the scenario
         """
-        # TODO: double-check probability calculation; is it /10?
-        # TODO: risk index (does this include cost?) vs. probablity
-        self.probability = float(probability) / 10
+        self.probability = float(probability)
         self.nodeKeys = nodeKeys
 
     def __str__(self):
@@ -173,12 +171,12 @@ jsonObj = """
     {
       "key": "LEAF",
       "text": "cyberAttack",
-      "riskIndex": "1"
+      "riskIndex": ".1"
     },
     {
       "key": "LEAF2",
       "text": "physicalAttack",
-      "riskIndex": "3"
+      "riskIndex": ".3"
     },
     {
       "key": "OR2",
@@ -190,12 +188,12 @@ jsonObj = """
     {
       "key": "LEAF3",
       "text": "phishingAttack",
-      "riskIndex": "4"
+      "riskIndex": ".4"
     },
     {
       "key": "LEAF4",
       "text": "spyware",
-      "riskIndex": "7"
+      "riskIndex": ".7"
     }
   ],
   "edgeData": [
