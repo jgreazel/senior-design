@@ -23,6 +23,7 @@
     "@angular/router": "~11.2.0",
     "core-js": "^3.6.5",
     "file-saver": "^2.0.5",
+    "file-system": "^2.2.2",
     "gojs": "^2.1.27",
     "gojs-angular": "1.0.10",
     "ng": "0.0.0",

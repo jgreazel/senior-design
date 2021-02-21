@@ -5,7 +5,14 @@
   <button type="button" (click)="onDown('json', false)">Save JSON</button>
 </div>
 
-<h2><br></h2>
+
+
+<div class="form-group">
+  <label for="file">Choose File</label>
+  <input type="file"
+         id="file"
+         (change)="handleFileInput($event.target.files)">
+</div>
 
 <div class="left">
   Palette

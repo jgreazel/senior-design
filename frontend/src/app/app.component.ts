@@ -168,9 +168,11 @@ export class AppComponent {
     return dia;
   }
 
+  // Nodes in the graph
   public diagramNodeData: Array<go.ObjectData> = [
 
   ];
+  // Links in the graph
   public diagramLinkData: Array<go.ObjectData> = [
 
   ];
@@ -314,14 +316,32 @@ export class AppComponent {
       return;
     }
     this.text = "";
-    this.text += JSON.stringify(this.diagramNodeData);
-    this.text += ",\n" + JSON.stringify(this.diagramLinkData);
-    console.log(this.diagramNodeData);
+    this.text += "{\n\"nodes\": " + JSON.stringify(this.diagramNodeData) + ",\n";
+    this.text +=  "\"links\": " + JSON.stringify(this.diagramLinkData) + "\n}";
     const fileType = this.fileSaverService.genType(fileName);
     const txtBlob = new Blob([this.text], { type: fileType });
     this.fileSaverService.save(txtBlob, fileName, null, this.options);
   }
 
-
+  fileToUpload: File = null;
+  handleFileInput(files: FileList) {
+    this.fileToUpload = files.item(0);
+    let fr = new FileReader();
+    fr.readAsText(this.fileToUpload, "UTF-8");
+    fr.onload = () => {
+      // @ts-ignore
+      console.log(JSON.parse(fr.result));
+      // @ts-ignore
+      let data = JSON.parse(fr.result);
+      fr.EMPTY
+      this.diagramNodeData = [];
+      this.diagramLinkData = [];
+      this.diagramNodeData = data.nodes;
+      this.diagramLinkData = data.links;
+      this.myDiagramComponent.diagram.requestUpdate()
+      console.log(this.diagramNodeData);
+      console.log(this.diagramLinkData)
+    }
+  }
 }
 
