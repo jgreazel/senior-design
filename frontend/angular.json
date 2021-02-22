@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": "462f2e1e-8265-4d9a-9979-3c34b7c52a8c"
+  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -40,7 +43,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -140,7 +142,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/gojs-angular/tsconfig.lib.json",
             "project": "projects/gojs-angular/ng-package.json"
