@@ -38,7 +38,7 @@ export class AppComponent {
         this.diagramLinkData = data;
       })
   }
-
+  
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
 
@@ -99,7 +99,14 @@ export class AppComponent {
           linkFromPortIdProperty: 'fromPort',
           linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
         }
-      )
+      ),
+      layout: $(go.TreeLayout, { isInitial: true, isOngoing: false }),
+        "InitialLayoutCompleted": function(e) {
+        // if not all Nodes have real locations, force a layout to happen
+        if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
+          e.diagram.layoutDiagram(true);
+        }
+      }
     });
 
     dia.commandHandler.archetypeGroupData = { key: 'Group', isGroup: true };
@@ -164,7 +171,6 @@ export class AppComponent {
         makePort('t', go.Spot.TopCenter),
         makePort('b', go.Spot.BottomCenter)
       )
-
     return dia;
   }
 
@@ -330,17 +336,17 @@ export class AppComponent {
     fr.readAsText(this.fileToUpload, "UTF-8");
     fr.onload = () => {
       // @ts-ignore
-      console.log(JSON.parse(fr.result));
-      // @ts-ignore
       let data = JSON.parse(fr.result);
-      fr.EMPTY
       this.diagramNodeData = [];
       this.diagramLinkData = [];
       this.diagramNodeData = data.nodes;
       this.diagramLinkData = data.links;
-      this.myDiagramComponent.diagram.requestUpdate()
       console.log(this.diagramNodeData);
-      console.log(this.diagramLinkData)
+      console.log(this.diagramLinkData);
+      
+      //this.skipsDiagramUpdate = false;
+      // this.myDiagramComponent.diagram.layout.invalidateLayout();\
+      // this.myDiagramComponent.diagram.requestUpdate();
     }
   }
 }
