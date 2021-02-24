@@ -3,17 +3,28 @@
 <h1 class='title'>CySec Game
   <div class="button-row">
     <button (click)="getNodeData()">
-      <mat-icon>save</mat-icon>
+      <mat-icon>get_app</mat-icon>
       <div class="button-text">Save</div>
     </button>
     <button (click)="analyzeData()">
       <mat-icon>analytics</mat-icon>
       <div class="button-text">Analyze</div>
     </button>
+    <button (click)="onDown('json', false)">
+      <mat-icon>save</mat-icon>
+      <div class="button-text">Save</div>
+    </button>
   </div>
 </h1>
 
-<h2><br></h2>
+<h3 class="button-row">
+  <div class="form-group">
+    <label for="file">Choose File</label>
+    <input type="file"
+           id="file"
+           (change)="handleFileInput($event.target.files)">
+  </div>
+</h3>
 
 
 <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>

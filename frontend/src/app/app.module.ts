@@ -11,7 +11,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import {MatListModule} from '@angular/material/list';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { MatIconModule} from '@angular/material/icon';
-
+import { FileSaverModule } from 'ngx-filesaver';
 
 @NgModule({
   declarations: [
@@ -28,7 +28,8 @@ import { MatIconModule} from '@angular/material/icon';
     BrowserAnimationsModule,
     MatListModule,
     MatFormFieldModule,
-    MatIconModule
+    MatIconModule,
+    FileSaverModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
