@@ -11,10 +11,12 @@ import * as go from 'gojs';
 export class InspectorComponent {
 
   public _selectedNode: go.Node;
+  public _isSafePath: boolean;
   public data = {
     key: null,
     text: null,
     probability: null,
+    impact: null
   };
 
   @Input()
@@ -24,17 +26,23 @@ export class InspectorComponent {
   public onFormChange: EventEmitter<any> = new EventEmitter<any>();
 
   @Input()
-  get selectedNode() { return this._selectedNode; }
+  get selectedNode() {
+    return this._selectedNode;
+  }
   set selectedNode(node: go.Node) {
-    if (node) {
+    if (node && (node.key[0] === "S" || node.key[0] === "L")) {
       this._selectedNode = node;
+      this._isSafePath = (node.key[0] === "L");
       this.data.key = this._selectedNode.data.key;
       this.data.probability = this._selectedNode.data.probability;
+      this.data.impact = this._selectedNode.data.impact;
       this.data.text = this._selectedNode.data.text;
     } else {
       this._selectedNode = null;
+      this._isSafePath = false;
       this.data.key = null;
       this.data.probability = null;
+      this.data.impact = null;
       this.data.text = null;
     }
   }
