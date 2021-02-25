@@ -59,6 +59,17 @@ class Scenario:
             keys.append(key)
         return Scenario(prob, keys)
 
+def normalize():
+    """
+    Normalizes probabilty of attacks in nodeList to sum to 1
+    """
+    sum = 0.0
+    for node in nodesList:
+        if node["key"][0] == "L":
+            sum += float(node["riskIndex"])
+    for node in nodesList:
+        node["riskIndex"] = float(node["riskIndex"]) / sum
+
 
 def findRoot():
     """Find root node."""
@@ -171,12 +182,12 @@ jsonObj = """
     {
       "key": "LEAF",
       "text": "cyberAttack",
-      "riskIndex": ".1"
+      "riskIndex": "1.1"
     },
     {
       "key": "LEAF2",
       "text": "physicalAttack",
-      "riskIndex": ".3"
+      "riskIndex": "8.3"
     },
     {
       "key": "OR2",
@@ -188,12 +199,12 @@ jsonObj = """
     {
       "key": "LEAF3",
       "text": "phishingAttack",
-      "riskIndex": ".4"
+      "riskIndex": "7.2"
     },
     {
       "key": "LEAF4",
       "text": "spyware",
-      "riskIndex": ".7"
+      "riskIndex": "3.4"
     }
   ],
   "edgeData": [
@@ -246,6 +257,8 @@ jsonData = json.loads(jsonObj)
 
 nodesList = jsonData["nodeData"]
 edgesList = jsonData["edgeData"]
+
+normalize()
 
 scenarios = findScenarios(findRoot())
 print(*scenarios, sep="\n")
