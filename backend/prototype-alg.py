@@ -86,7 +86,16 @@ def findRoot():
             break
     if root is None:
         print("Error:: Cannot find root node")
-        sys.exit()
+    return root
+
+def findAttackRoot():
+    """Find root node of attack tree (that does not include safe path node)."""
+    root = findRoot()
+    children = findChildren(root)
+    for node in children:
+      if node["key"][0] != "L":
+        return node
+    print("Error:: Cannot find attack root node")
     return root
 
 
@@ -166,6 +175,20 @@ jsonObj = """
 {
   "nodeData": [
     {
+      "key": "OR3",
+      "text": "placeholderText",
+      "riskIndex": "0",
+      "color": "red",
+      "shape": "andgate"
+    },
+    {
+      "key": "LEAF5",
+      "text": "placeholderText",
+      "riskIndex": "8",
+      "color": "red",
+      "shape": "andgate"
+    },
+    {
       "key": "AND",
       "text": "placeholderText",
       "riskIndex": "0",
@@ -208,6 +231,20 @@ jsonObj = """
     }
   ],
   "edgeData": [
+    {
+      "from": "OR3",
+      "to": "AND",
+      "fromPort": "b",
+      "toPort": "t",
+      "key": -7
+    },
+    {
+      "from": "OR3",
+      "to": "LEAF5",
+      "fromPort": "b",
+      "toPort": "t",
+      "key": -8
+    },
     {
       "from": "AND",
       "to": "OR",
@@ -260,5 +297,5 @@ edgesList = jsonData["edgeData"]
 
 normalize()
 
-scenarios = findScenarios(findRoot())
+scenarios = findScenarios(findAttackRoot())
 print(*scenarios, sep="\n")
