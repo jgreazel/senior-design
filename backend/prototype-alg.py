@@ -19,7 +19,7 @@ class Scenario:
         Combines scenario2 with self
     """
 
-    def __init__(self, probability, nodeKeys):
+    def __init__(self, probability, impact, nodeKeys):
         """
         Initializes a scenario with the given probability and nodeKeys.
 
@@ -27,19 +27,24 @@ class Scenario:
         ----------
         probability : float?
             The scenario's probability of occurring
+        impact : float?
+            The scenario's impact
         nodeKeys : [str]
             The list of nodes in the scenario
         """
         self.probability = float(probability)
+        self.impact = float(impact)
         self.nodeKeys = nodeKeys
 
     def __str__(self):
         """Returns nodes in scenario"""
         # TODO: Check output with deeper tree
-        output = str(round(self.probability, 4)) + " : "
+        risk = str(round(self.impact * self.probability, 3))
+        prob = str(round(self.probability, 4))
+        impact = str(round(self.impact, 2))
+        output = "risk: " + risk + "  \tprob: " + prob + "  \timpact: " + impact + "\t: "
         for key in self.nodeKeys:
             output += key + " "
-
         return output
 
     def combine(self, scenario2):
@@ -52,12 +57,13 @@ class Scenario:
             The scenario to combine
         """
         prob = self.probability * scenario2.probability
+        impact = self.impact + scenario2.impact
         keys = list(())
         for key in self.nodeKeys:
             keys.append(key)
         for key in scenario2.nodeKeys:
             keys.append(key)
-        return Scenario(prob, keys)
+        return Scenario(prob, impact, keys)
 
 def normalize():
     """
@@ -141,7 +147,7 @@ def findScenarios(node):
     """
     if node["key"][0] == "L":  # If leaf node
         scenarioList = list(())
-        scenarioList.append(Scenario(node["riskIndex"], [node["key"]]))
+        scenarioList.append(Scenario(node["riskIndex"], node["impact"], [node["key"]]))
         return scenarioList
     elif node["key"][0] == "O":  # If OR node
         scenarioList = list(())
@@ -183,10 +189,8 @@ jsonObj = """
     },
     {
       "key": "LEAF5",
-      "text": "placeholderText",
-      "riskIndex": "8",
-      "color": "red",
-      "shape": "andgate"
+      "text": "safePath",
+      "riskIndex": "8"
     },
     {
       "key": "AND",
@@ -205,12 +209,14 @@ jsonObj = """
     {
       "key": "LEAF",
       "text": "cyberAttack",
-      "riskIndex": "1.1"
+      "riskIndex": "1.1",
+      "impact": "89"
     },
     {
       "key": "LEAF2",
       "text": "physicalAttack",
-      "riskIndex": "8.3"
+      "riskIndex": "8.3",
+      "impact": "11"
     },
     {
       "key": "OR2",
@@ -222,12 +228,14 @@ jsonObj = """
     {
       "key": "LEAF3",
       "text": "phishingAttack",
-      "riskIndex": "7.2"
+      "riskIndex": "7.2",
+      "impact": "231"
     },
     {
       "key": "LEAF4",
       "text": "spyware",
-      "riskIndex": "3.4"
+      "riskIndex": "3.4",
+      "impact": "20"
     }
   ],
   "edgeData": [
