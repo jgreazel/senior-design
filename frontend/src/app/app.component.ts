@@ -22,16 +22,15 @@ export class AppComponent {
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
 
-
-
   // TEST POST METHOD
   analyzeData() {
-    const rando = Math.random();
-    this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
+    if(this.validateData()){ // data has been validated
+      this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
       .subscribe(data => {
         //do something meaningful with data here once connected to BE
         console.log(data);
       })
+    }
   }
 
   // TEST GET METHOD
@@ -43,9 +42,6 @@ export class AppComponent {
         this.diagramLinkData = data;
       })
   }
-
-
-
   
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
@@ -359,19 +355,42 @@ export class AppComponent {
     }
   }
 
+  /**
+   * Returns 
+   *  true if data has been successfully validated
+   *  false if there is an error in the data
+   */
   validateData(){
     let nodes = this.diagramNodeData;
-    let sum: number = 0;
+    let links = this.diagramLinkData;
+    let safePathSum: number = 0;
+    let alertString: string = ""
     for(let i = 0; i < nodes.length; i++){
-      // if leaf, check values
-      if(nodes[i].key.includes("LEAF")){ 
-        console.log(typeof(nodes[i].riskIndex));
-        sum += Number(nodes[i].riskIndex);
+      // if safe path node, add to count
+      if(nodes[i].key.includes("SAFE")){ 
+        safePathSum += 1;
+        if(safePathSum > 1){ // If there'smore than one safe path
+          alertString += "Only one safe path is allowed.\n";
+          break;
+        }
       }
     }
-    console.log("sum = " + sum);
+    for(let i = 0; i < links.length; i++){
+      // if link to safe node and not from an or node
+      if(links[i].to.includes("SAFE") && !links[i].from.includes("OR")){
+        alertString += "Safe path must be the child of an OR node (The head OR node).\n";
+        break;
+      }
+    }
+    // there should always be one more node than links
+    if((nodes.length-1) != links.length ){
+      alertString += "A tree property has been violated.\n"
+    }
+    if(alertString !== ""){
+      alert(alertString);
+      return false;
+    } else {
+      return true;
+    }
   }
 }
-
-// console.log("shape" + nodes[i].shape);
-// console.log("key" + nodes[i].key);
