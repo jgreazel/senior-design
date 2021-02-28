@@ -357,5 +357,20 @@ export class AppComponent {
       // this.myDiagramComponent.diagram.requestUpdate();
     }
   }
+
+  validateData(){
+    let nodes = this.diagramNodeData;
+    let sum: number = 0;
+    for(let i = 0; i < nodes.length; i++){
+      // if leaf, check values
+      if(nodes[i].key.includes("LEAF")){ 
+        console.log(typeof(nodes[i].riskIndex));
+        sum += Number(nodes[i].riskIndex);
+      }
+    }
+    console.log("sum = " + sum);
+  }
 }
 
+// console.log("shape" + nodes[i].shape);
+// console.log("key" + nodes[i].key);
