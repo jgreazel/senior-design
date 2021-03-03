@@ -3,6 +3,10 @@ import * as go from 'gojs';
 import { DataSyncService, DiagramComponent, PaletteComponent } from 'gojs-angular';
 import * as _ from 'lodash';
 import { ApiService } from './api.service';
+import {MatIconModule} from '@angular/material/icon';
+import { FileSaverService } from 'ngx-filesaver';
+import { FileSaverOptions } from 'file-saver';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -11,17 +15,21 @@ import { ApiService } from './api.service';
   encapsulation: ViewEncapsulation.ShadowDom
 })
 
+
+
 export class AppComponent {
 
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
 
 
+
   // TEST POST METHOD
-  computeNodeData() {
+  analyzeData() {
     const rando = Math.random();
-    this.apiService.computeNodeData({ key: rando, color: 'red' })
+    this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
       .subscribe(data => {
+        //do something meaningful with data here once connected to BE
         console.log(data);
       })
   }
@@ -36,6 +44,9 @@ export class AppComponent {
       })
   }
 
+
+
+  
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
 
@@ -96,7 +107,14 @@ export class AppComponent {
           linkFromPortIdProperty: 'fromPort',
           linkKeyProperty: 'key' // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
         }
-      )
+      ),
+      layout: $(go.TreeLayout, { isInitial: true, isOngoing: false }),
+        "InitialLayoutCompleted": function(e) {
+        // if not all Nodes have real locations, force a layout to happen
+        if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
+          e.diagram.layoutDiagram(true);
+        }
+      }
     });
 
     dia.commandHandler.archetypeGroupData = { key: 'Group', isGroup: true };
@@ -161,13 +179,14 @@ export class AppComponent {
         makePort('t', go.Spot.TopCenter),
         makePort('b', go.Spot.BottomCenter)
       )
-
     return dia;
   }
 
+  // Nodes in the graph
   public diagramNodeData: Array<go.ObjectData> = [
 
   ];
+  // Links in the graph
   public diagramLinkData: Array<go.ObjectData> = [
 
   ];
@@ -203,7 +222,7 @@ export class AppComponent {
             stretch: go.GraphObject.Horizontal,
             height: 40,
             width: 45,
-            margin: 20
+            margin: new go.Margin(70, 25, 10, 25),
           }, new go.Binding('figure', 'shape'),
             new go.Binding('stroke', 'color')),
           $(go.TextBlock, {
@@ -220,9 +239,10 @@ export class AppComponent {
   }
 
   public paletteNodeData: Array<go.ObjectData> = [
-    { key: 'AND', text: 'placeholderText', riskIndex: '0', color: 'red', shape: 'andgate' },
-    { key: 'OR', text: 'placeholderText', riskIndex: '0', color: 'lightgreen', shape: 'orgate' },
-    { key: 'LEAF', text: 'placeholderText', riskIndex: '0', color: 'lightgrey', shape: 'square' }
+    { key: 'AND',  color: 'red', shape: 'andgate' },
+    { key: 'OR',  color: 'green', shape: 'orgate' },
+    { key: 'LEAF', text: 'placeholderText', impact: '0', probability: '0', color: 'blue', shape: 'square' },
+    { key: 'SAFE_PATH', text: 'Safe Path', impact: '0', probability: '0', color: 'lightblue', shape: 'square' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
 
@@ -243,7 +263,11 @@ export class AppComponent {
   };
 
   // added dependecy injection for api service
-  constructor(private cdr: ChangeDetectorRef, private apiService: ApiService) { }
+  constructor(
+    private cdr: ChangeDetectorRef, 
+    private apiService: ApiService,
+    private httpClient: HttpClient,
+    private fileSaverService: FileSaverService) { }
 
   public observedDiagram = null;
 
@@ -289,6 +313,50 @@ export class AppComponent {
     }
   }
 
+  text: string;
+  fileName: string;
+  options: FileSaverOptions = {
+    autoBom: false,
+  };
 
+  onDown(type: string, fromRemote: boolean) {
+    const fileName = `save.${type}`;
+    if (fromRemote) {
+      this.httpClient.get(`assets/files/demo.${type}`, {
+        observe: 'response',
+        responseType: 'blob'
+      }).subscribe(res => {
+        this.fileSaverService.save(res.body, fileName);
+      });
+      return;
+    }
+    this.text = "";
+    this.text += "{\n\"nodes\": " + JSON.stringify(this.diagramNodeData) + ",\n";
+    this.text +=  "\"links\": " + JSON.stringify(this.diagramLinkData) + "\n}";
+    const fileType = this.fileSaverService.genType(fileName);
+    const txtBlob = new Blob([this.text], { type: fileType });
+    this.fileSaverService.save(txtBlob, fileName, null, this.options);
+  }
+
+  fileToUpload: File = null;
+  handleFileInput(files: FileList) {
+    this.fileToUpload = files.item(0);
+    let fr = new FileReader();
+    fr.readAsText(this.fileToUpload, "UTF-8");
+    fr.onload = () => {
+      // @ts-ignore
+      let data = JSON.parse(fr.result);
+      this.diagramNodeData = [];
+      this.diagramLinkData = [];
+      this.diagramNodeData = data.nodes;
+      this.diagramLinkData = data.links;
+      console.log(this.diagramNodeData);
+      console.log(this.diagramLinkData);
+      
+      //this.skipsDiagramUpdate = false;
+      // this.myDiagramComponent.diagram.layout.invalidateLayout();\
+      // this.myDiagramComponent.diagram.requestUpdate();
+    }
+  }
 }
 

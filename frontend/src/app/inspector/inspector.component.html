@@ -1,11 +1,12 @@
-<form *ngIf='selectedNode' (ngSubmit)='onCommitForm()'>
-  <p>Key: <input style="display: inline;" name='key' disabled [(ngModel)]='data.key' /></p>
-  <p>Risk Index: <input style="display: inline;" name='riskIndex' [(ngModel)]='data.riskIndex' /></p>
-  <p>Text: <input style="display: inline;" name='text' [(ngModel)]='data.text'/></p>
+<form *ngIf="selectedNode" (ngSubmit)="onCommitForm()">
+  <label for="key">Key: (read only)</label>
+  <input name="key" id="key" readonly [(ngModel)]="data.key" />
+  <label for="probability">Probability: (1-10) </label>
+  <input name="probability" key="probability" type="number" max="10" min="1" [(ngModel)]="data.probability" />
+  <label *ngIf="_isSafePath" for="impact">Impact: ($) </label>
+  <input *ngIf="_isSafePath" name="impact" key="impact" type="number" min="1" [(ngModel)]="data.impact" />
+  <label for="description">Text: </label>
+  <input name="description" key="description" [(ngModel)]="data.text" />
   <button type="submit">Save Changes</button>
 </form>
 
-
-<div *ngIf='!selectedNode'>
-  Select a Node to use Inspector
-</div>

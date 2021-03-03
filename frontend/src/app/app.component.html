@@ -1,62 +1,65 @@
-<h1 mat-subheader>CySec Game</h1>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet">
 
-<div class="left box">
-  <button (click)="getNodeData()">Get Nodes</button>
+<h1 class='title'>CySec Game
+  <div class="button-row">
+    <button (click)="getNodeData()">
+      <mat-icon>get_app</mat-icon>
+      <div class="button-text">Save</div>
+    </button>
+    <button (click)="analyzeData()">
+      <mat-icon>analytics</mat-icon>
+      <div class="button-text">Analyze</div>
+    </button>
+    <button (click)="onDown('json', false)">
+      <mat-icon>save</mat-icon>
+      <div class="button-text">Save</div>
+    </button>
+  </div>
+</h1>
+
+<h3 class="button-row">
+  <div class="form-group">
+    <label for="file">Choose File</label>
+    <input type="file"
+           id="file"
+           (change)="handleFileInput($event.target.files)">
+  </div>
+</h3>
+
+
+<app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
+
+
+<div class="page-section">
+  <div class="left">
+    <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
+      [nodeDataArray]='paletteNodeData' [linkDataArray]='paletteLinkData' [modelData]='paletteModelData'
+      (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
+    </gojs-palette>
+  </div>
+
+  <div class="clear left">
+    <gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='diagramNodeData'
+      [linkDataArray]='diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='diagramModelData'
+      [skipsDiagramUpdate]='skipsDiagramUpdate' (modelChange)='diagramModelChange($event)'>
+    </gojs-diagram>
+  </div>
+
+  <!-- <div class="clear left box">
+    <h3>Links in app data</h3>
+    <ul>
+      <li *ngFor="let ld of diagramLinkData">
+        Link Key: {{ld.key}}, To: {{ld.to}}, From: {{ ld.from }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="left box">
+    <h3>Nodes in app data</h3>
+    <ul>
+      <li *ngFor="let nd of diagramNodeData">
+        Node Key: {{nd.key}}, Text: {{nd.text}}, Risk Index: {{nd.probability}}
+      </li>
+    </ul>
+  </div> -->
 </div>
-
-<h2><br></h2>
-
-<div class="left">
-  Palette
-  <gojs-palette 
-    #myPalette [initPalette]='initPalette'
-    [divClassName]='paletteDivClassName'
-    [nodeDataArray]='paletteNodeData'
-    [linkDataArray]='paletteLinkData'
-    [modelData]='paletteModelData'
-    (modelChange)='paletteModelChange($event)'
-    [skipsPaletteUpdate]='skipsPaletteUpdate'>
-  </gojs-palette>
-  <section>
-    <div class="example-button-row">
-      <button mat-raised-button>Analyze</button>
-    </div>
-  </section>
-</div>
-
-<div class="left">
-  Diagram
-  <gojs-diagram
-    #myDiagram
-    [initDiagram]='initDiagram'
-    [nodeDataArray]='diagramNodeData'
-    [linkDataArray]='diagramLinkData'
-    [divClassName]='diagramDivClassName'
-    [modelData]='diagramModelData'
-    [skipsDiagramUpdate]='skipsDiagramUpdate'
-    (modelChange)='diagramModelChange($event)'>
-  </gojs-diagram>
-</div>
-
-<div class="left">
-  <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
-</div>
-
-<div class="clear left box">
-  <h3>Links in app data</h3>
-  <ul>
-    <li *ngFor="let ld of diagramLinkData">
-      Link Key: {{ld.key}}, To: {{ld.to}}, From: {{ ld.from }}
-    </li>
-  </ul>
-</div>
-
-<div class="left box">
-  <h3>Nodes in app data</h3>
-  <ul>
-    <li *ngFor="let nd of diagramNodeData">
-      Node Key: {{nd.key}}, Text: {{nd.text}}, Risk Index: {{nd.riskIndex}}
-    </li>
-  </ul>
-</div>
-

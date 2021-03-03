@@ -8,7 +8,10 @@ import {MatButtonModule} from '@angular/material/button';
 import { InspectorComponent } from './inspector/inspector.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSliderModule } from '@angular/material/slider';
-import {MatListModule} from "@angular/material/list";
+import {MatListModule} from '@angular/material/list';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import { MatIconModule} from '@angular/material/icon';
+import { FileSaverModule } from 'ngx-filesaver';
 
 @NgModule({
   declarations: [
@@ -23,7 +26,10 @@ import {MatListModule} from "@angular/material/list";
     HttpClientModule,
     GojsAngularModule,
     BrowserAnimationsModule,
-    MatListModule
+    MatListModule,
+    MatFormFieldModule,
+    MatIconModule,
+    FileSaverModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
