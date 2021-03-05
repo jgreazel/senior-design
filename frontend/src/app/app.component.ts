@@ -22,6 +22,11 @@ export class AppComponent {
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
 
+  public showUpload: boolean = false;
+  renderUploadDiv(){
+    this.showUpload = !this.showUpload;
+  }
+
   // TEST POST METHOD
   analyzeData() {
     if(this.validateData()){ // data has been validated
@@ -245,6 +250,7 @@ export class AppComponent {
   public paletteNodeData: Array<go.ObjectData> = [
     { key: 'AND',  color: 'red', shape: 'andgate' },
     { key: 'OR',  color: 'green', shape: 'orgate' },
+    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0'},
     { key: 'LEAF', text: 'placeholderText', defenseCost: '0', probability: '0', color: 'blue', shape: 'square' },
     { key: 'SAFE_PATH', text: 'Safe Path', defenseCost: '0', probability: '0', color: 'lightblue', shape: 'square' }
   ];
