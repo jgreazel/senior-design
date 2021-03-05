@@ -2,12 +2,16 @@
 
 <h1 class='title'>CySec Game
   <div class="button-row">
+    <button (click)="getReport()">
+      <mat-icon>assignment</mat-icon>
+      <div class="button-text">Report</div>
+    </button>
     <button (click)="getNodeData()">
       <mat-icon>get_app</mat-icon>
       <div class="button-text">Save</div>
     </button>
     <button (click)="analyzeData()">
-      <mat-icon>analytics</mat-icon>
+      <mat-icon>cached</mat-icon>
       <div class="button-text">Analyze</div>
     </button>
     <button (click)="onDown('json', false)">
@@ -17,15 +21,10 @@
   </div>
 </h1>
 
-<h3 class="button-row">
-  <div class="form-group">
-    <label for="file">Choose File</label>
-    <input type="file"
-           id="file"
-           (change)="handleFileInput($event.target.files)">
-  </div>
-</h3>
-
+<h2 class = "impactBox">
+  <label for="systemImpact" margin = "10px 5px">Impact of System Failure:</label>
+  <input type="number" id="systemImpact" name="systemImpact" min="10" margin ="10px 5px">
+</h2>
 
 <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
 
@@ -43,7 +42,8 @@
       [linkDataArray]='diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='diagramModelData'
       [skipsDiagramUpdate]='skipsDiagramUpdate' (modelChange)='diagramModelChange($event)'>
     </gojs-diagram>
-  </div>
+
+
 
   <!-- <div class="clear left box">
     <h3>Links in app data</h3>

@@ -33,6 +33,12 @@ button {
   border-radius: 25px;
   height: 40px;
 }
+.impactBox{
+  padding: 20px;
+  background: 242526;
+  margin: 0px;
+  color: #dddfe4;
+}
 
 .button-text {
   float: left;
