@@ -47,6 +47,10 @@ export class AppComponent {
         this.diagramLinkData = data;
       })
   }
+
+  getReport() {
+    //TODO
+  }
   
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
@@ -192,6 +196,10 @@ export class AppComponent {
 
   ];
 
+  public function; displayImpact() {
+    document.getElementById("").innerHTML = "Hello World";
+  }
+
   public diagramDivClassName: string = 'myDiagramDiv';
   public diagramModelData = { prop: 'value' };
   public skipsDiagramUpdate = false;
@@ -243,8 +251,8 @@ export class AppComponent {
     { key: 'AND',  color: 'red', shape: 'andgate' },
     { key: 'OR',  color: 'green', shape: 'orgate' },
     { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0'},
-    { key: 'LEAF', text: 'placeholderText', impact: '0', probability: '0', color: 'blue', shape: 'square' },
-    { key: 'SAFE_PATH', text: 'Safe Path', impact: '0', probability: '0', color: 'lightblue', shape: 'square' }
+    { key: 'LEAF', text: 'placeholderText', defenseCost: '0', probability: '0', color: 'blue', shape: 'square' },
+    { key: 'SAFE_PATH', text: 'Safe Path', defenseCost: '0', probability: '0', color: 'lightblue', shape: 'square' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
 

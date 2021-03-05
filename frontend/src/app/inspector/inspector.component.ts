@@ -17,7 +17,7 @@ export class InspectorComponent {
     key: null,
     text: null,
     probability: null,
-    cost: null
+    defenseCost: null
   };
 
   @Input()
@@ -37,7 +37,7 @@ export class InspectorComponent {
       this._displayOnSafe = (node.key[0] === "S");
       this.data.key = this._selectedNode.data.key;
       this.data.probability = this._selectedNode.data.probability;
-      this.data.cost = this._selectedNode.data.cost;
+      this.data.defenseCost = this._selectedNode.data.defenseCost;
       this.data.text = this._selectedNode.data.text;
     } else {
       this._selectedNode = null;
@@ -45,7 +45,7 @@ export class InspectorComponent {
       this._displayOnSafe = false;
       this.data.key = null;
       this.data.probability = null;
-      this.data.cost = null;
+      this.data.defenseCost = null;
       this.data.text = null;
     }
   }
