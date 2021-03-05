@@ -14,18 +14,19 @@
       <mat-icon>save</mat-icon>
       <div class="button-text">Save</div>
     </button>
+    <button (click)="renderUploadDiv()">
+      <mat-icon>upload</mat-icon>
+      <div class="button-text">Upload</div>
+    </button>
   </div>
 </h1>
 
-<h3 class="button-row">
-  <div class="form-group">
-    <label for="file">Choose File</label>
-    <input type="file"
-           id="file"
-           (change)="handleFileInput($event.target.files)">
-  </div>
-</h3>
+<br>
 
+<div *ngIf="showUpload" class="uploadDiv">
+  <label for="file">Choose File</label>
+  <input type="file" id="file" (change)="handleFileInput($event.target.files)">
+</div>
 
 <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
 

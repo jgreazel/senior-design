@@ -1,12 +1,19 @@
-<form *ngIf="selectedNode" (ngSubmit)="onCommitForm()">
+<form *ngIf="_selectedNode" (ngSubmit)="onCommitForm()">
   <label for="key">Key: (read only)</label>
   <input name="key" id="key" readonly [(ngModel)]="data.key" />
-  <label for="probability">Probability: (1-10) </label>
-  <input name="probability" key="probability" type="number" max="10" min="1" [(ngModel)]="data.probability" />
-  <label *ngIf="_isNotSafePath" for="cost">Cost: ($ to attack) </label>
-  <input *ngIf="_isNotSafePath" name="cost" key="cost" type="number" min="1" [(ngModel)]="data.cost" />
+
+  <label *ngIf="_displayOnLeaf || _displayOnSafe" for="probability">Probability: (1-10) </label>
+  <input *ngIf="_displayOnLeaf || _displayOnSafe" name="probability" key="probability" type="number" max="10" min="1" [(ngModel)]="data.probability" />
+  
+  <label *ngIf="_displayOnLeaf" for="cost">Cost: ($ to attack) </label>
+  <input *ngIf="_displayOnLeaf" name="cost" key="cost" type="number" min="1" [(ngModel)]="data.cost" />
+  
+  <label *ngIf="!(_displayOnLeaf || _displayOnSafe)" for="impact">Impact: ($ to system) </label>
+  <input *ngIf="!(_displayOnLeaf || _displayOnSafe)" name="impact" key="impact" type="number" min="1" [(ngModel)]="data.impact" />
+  
   <label for="description">Text: </label>
   <input name="description" key="description" [(ngModel)]="data.text" />
+
   <button type="submit">Save Changes</button>
 </form>
 

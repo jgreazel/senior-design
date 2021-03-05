@@ -11,7 +11,8 @@ import * as go from 'gojs';
 export class InspectorComponent {
 
   public _selectedNode: go.Node;
-  public _isNotSafePath: boolean;
+  public _displayOnLeaf: boolean;
+  public _displayOnSafe: boolean;
   public data = {
     key: null,
     text: null,
@@ -30,16 +31,18 @@ export class InspectorComponent {
     return this._selectedNode;
   }
   set selectedNode(node: go.Node) {
-    if (node && (node.key[0] === "S" || node.key[0] === "L")) {
+    if (node && (node.key[0] === "S" || node.key[0] === "L" || node.key[0] === "R")) {
       this._selectedNode = node;
-      this._isNotSafePath = (node.key[0] === "L");
+      this._displayOnLeaf = (node.key[0] === "L");
+      this._displayOnSafe = (node.key[0] === "S");
       this.data.key = this._selectedNode.data.key;
       this.data.probability = this._selectedNode.data.probability;
       this.data.cost = this._selectedNode.data.cost;
       this.data.text = this._selectedNode.data.text;
     } else {
       this._selectedNode = null;
-      this._isNotSafePath = false;
+      this._displayOnLeaf = false;
+      this._displayOnSafe = false;
       this.data.key = null;
       this.data.probability = null;
       this.data.cost = null;
