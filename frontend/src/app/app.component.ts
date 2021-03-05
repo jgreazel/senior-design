@@ -391,8 +391,8 @@ export class AppComponent {
     }
     for(let i = 0; i < links.length; i++){
       // if link to safe node and not from an or node
-      if(links[i].to.includes("SAFE") && !links[i].from.includes("OR")){
-        alertString += "Safe path must be the child of an OR node (The head OR node).\n";
+      if(links[i].to.includes("SAFE") && !links[i].from.includes("ROOT")){
+        alertString += "Safe path must be the child of the ROOT node.\n";
         break;
       }
     }
