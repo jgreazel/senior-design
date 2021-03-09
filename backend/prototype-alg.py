@@ -19,7 +19,7 @@ class Scenario:
         Combines scenario2 with self
     """
 
-    def __init__(self, probability, cost, nodeKeys):
+    def __init__(self, probability, nodeKeys):
         """
         Initializes a scenario with the given probability and nodeKeys.
 
@@ -27,25 +27,33 @@ class Scenario:
         ----------
         probability : float?
             The scenario's probability of occurring
-        cost : float?
-            The scenario's cost to defend
         nodeKeys : [str]
             The list of nodes in the scenario
         """
         self.probability = float(probability)
-        self.cost = float(cost)
         self.nodeKeys = nodeKeys
 
     def __str__(self):
         """Returns nodes in scenario"""
         # TODO: Check output with deeper tree
-        risk = str(round(float(treeRoot["impact"]) * self.probability, 3))
+        risk = str(round(float(treeRoot["impact"]) * self.probability, 4))
         prob = str(round(self.probability, 4))
-        cost = str(round(self.cost, 2))
-        output = "risk: " + risk + "  \tprob: " + prob + "  \tdcost: " + cost + "\t: "
+        output = "risk: " + risk + "  \tprob: " + prob + "\t: "
         for key in self.nodeKeys:
             output += key + " "
         return output
+
+    def toDict(self):
+        """Returns dictionary representation of scenario"""
+        risk = round(float(treeRoot["impact"]) * self.probability, 4)
+        prob = round(self.probability, 4)
+        leafKeys = self.nodeKeys
+        dit = {
+          "risk" : risk,
+          "probability" : prob,
+          "leafKeys" : leafKeys
+        }
+        return dit
 
     def combine(self, scenario2):
         """
@@ -57,13 +65,12 @@ class Scenario:
             The scenario to combine
         """
         prob = self.probability * scenario2.probability
-        cost = self.cost if self.cost < scenario2.cost else scenario2.cost
         keys = list(())
         for key in self.nodeKeys:
             keys.append(key)
         for key in scenario2.nodeKeys:
             keys.append(key)
-        return Scenario(prob, cost, keys)
+        return Scenario(prob, keys)
 
 def normalize():
     """
@@ -153,7 +160,7 @@ def findScenarios(node):
     """
     if node["key"][0] == "L":  # If leaf node
         scenarioList = list(())
-        scenarioList.append(Scenario(node["riskIndex"], node["cost"], [node["key"]]))
+        scenarioList.append(Scenario(node["riskIndex"], [node["key"]]))
         return scenarioList
     elif node["key"][0] == "O":  # If OR node
         scenarioList = list(())
@@ -216,14 +223,12 @@ jsonObj = """
     {
       "key": "LEAF",
       "text": "cyberAttack",
-      "riskIndex": "1.1",
-      "cost": "89"
+      "riskIndex": "1.1"
     },
     {
       "key": "LEAF2",
       "text": "physicalAttack",
-      "riskIndex": "8.3",
-      "cost": "11"
+      "riskIndex": "8.3"
     },
     {
       "key": "OR2",
@@ -235,14 +240,12 @@ jsonObj = """
     {
       "key": "LEAF3",
       "text": "phishingAttack",
-      "riskIndex": "7.2",
-      "cost": "231"
+      "riskIndex": "7.2"
     },
     {
       "key": "LEAF4",
       "text": "spyware",
-      "riskIndex": "3.4",
-      "cost": "20"
+      "riskIndex": "3.4"
     }
   ],
   "edgeData": [
@@ -316,4 +319,10 @@ treeRoot = findRoot()
 attackRoot = findAttackRoot(treeRoot)
 
 scenarios = findScenarios(attackRoot)
-print(*scenarios, sep="\n")
+
+scenList = []
+for scen in scenarios:
+    scenList.append(scen.toDict())
+
+sendToFrontendJson = json.dumps(scenList)
+print(sendToFrontendJson)
