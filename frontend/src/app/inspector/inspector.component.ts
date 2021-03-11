@@ -13,6 +13,8 @@ export class InspectorComponent {
   public _selectedNode: go.Node;
   public _displayOnLeaf: boolean;
   public _displayOnSafe: boolean;
+  public _displayOnDefense: boolean;
+
   public data = {
     key: null,
     text: null,
@@ -31,10 +33,11 @@ export class InspectorComponent {
     return this._selectedNode;
   }
   set selectedNode(node: go.Node) {
-    if (node && (node.key[0] === "S" || node.key[0] === "L" || node.key[0] === "R")) {
+    if (node && (node.key[0] === "S" || node.key[0] === "L" || node.key[0] === "R" || node.key[0] === "D")) {
       this._selectedNode = node;
       this._displayOnLeaf = (node.key[0] === "L");
       this._displayOnSafe = (node.key[0] === "S");
+      this._displayOnDefense = (node.key[0] === "D");
       this.data.key = this._selectedNode.data.key;
       this.data.probability = this._selectedNode.data.probability;
       this.data.defenseCost = this._selectedNode.data.defenseCost;
