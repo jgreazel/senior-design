@@ -11,12 +11,15 @@ import * as go from 'gojs';
 export class InspectorComponent {
 
   public _selectedNode: go.Node;
-  public _isSafePath: boolean;
+  public _displayOnLeaf: boolean;
+  public _displayOnSafe: boolean;
+  public _displayOnDefense: boolean;
+
   public data = {
     key: null,
     text: null,
     probability: null,
-    impact: null
+    defenseCost: null
   };
 
   @Input()
@@ -30,19 +33,22 @@ export class InspectorComponent {
     return this._selectedNode;
   }
   set selectedNode(node: go.Node) {
-    if (node && (node.key[0] === "S" || node.key[0] === "L")) {
+    if (node && (node.key[0] === "S" || node.key[0] === "L" || node.key[0] === "R" || node.key[0] === "D")) {
       this._selectedNode = node;
-      this._isSafePath = (node.key[0] === "L");
+      this._displayOnLeaf = (node.key[0] === "L");
+      this._displayOnSafe = (node.key[0] === "S");
+      this._displayOnDefense = (node.key[0] === "D");
       this.data.key = this._selectedNode.data.key;
       this.data.probability = this._selectedNode.data.probability;
-      this.data.impact = this._selectedNode.data.impact;
+      this.data.defenseCost = this._selectedNode.data.defenseCost;
       this.data.text = this._selectedNode.data.text;
     } else {
       this._selectedNode = null;
-      this._isSafePath = false;
+      this._displayOnLeaf = false;
+      this._displayOnSafe = false;
       this.data.key = null;
       this.data.probability = null;
-      this.data.impact = null;
+      this.data.defenseCost = null;
       this.data.text = null;
     }
   }

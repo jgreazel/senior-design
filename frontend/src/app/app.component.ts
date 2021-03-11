@@ -22,16 +22,20 @@ export class AppComponent {
   @ViewChild('myDiagram', { static: true }) public myDiagramComponent: DiagramComponent;
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
 
-
+  public showUpload: boolean = false;
+  renderUploadDiv(){
+    this.showUpload = !this.showUpload;
+  }
 
   // TEST POST METHOD
   analyzeData() {
-    const rando = Math.random();
-    this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
+    if(this.validateData()){ // data has been validated
+      this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
       .subscribe(data => {
         //do something meaningful with data here once connected to BE
         console.log(data);
       })
+    }
   }
 
   // TEST GET METHOD
@@ -44,8 +48,9 @@ export class AppComponent {
       })
   }
 
-
-
+  getReport() {
+    //TODO
+  }
   
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
@@ -191,6 +196,10 @@ export class AppComponent {
 
   ];
 
+  public function; displayImpact() {
+    document.getElementById("").innerHTML = "Hello World";
+  }
+
   public diagramDivClassName: string = 'myDiagramDiv';
   public diagramModelData = { prop: 'value' };
   public skipsDiagramUpdate = false;
@@ -241,8 +250,10 @@ export class AppComponent {
   public paletteNodeData: Array<go.ObjectData> = [
     { key: 'AND',  color: 'red', shape: 'andgate' },
     { key: 'OR',  color: 'green', shape: 'orgate' },
-    { key: 'LEAF', text: 'placeholderText', impact: '0', probability: '0', color: 'blue', shape: 'square' },
-    { key: 'SAFE_PATH', text: 'Safe Path', impact: '0', probability: '0', color: 'lightblue', shape: 'square' }
+    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0'},
+    { key: 'LEAF', text: 'placeholderText', defenseCost: '0', probability: '0', color: 'blue', shape: 'square' },
+    { key: 'SAFE_PATH', text: 'Safe Path', defenseCost: '0', probability: '0', color: 'lightblue', shape: 'square' },
+    { key: 'DEFENSE_NODE', text: 'Defense', defenseCost: '0', impact: '0', color: 'yellow', shape: 'circle' }
   ];
   public paletteLinkData: Array<go.ObjectData> = [
 
@@ -358,5 +369,43 @@ export class AppComponent {
       // this.myDiagramComponent.diagram.requestUpdate();
     }
   }
-}
 
+  /**
+   * Returns 
+   *  true if data has been successfully validated
+   *  false if there is an error in the data
+   */
+  validateData(){
+    let nodes = this.diagramNodeData;
+    let links = this.diagramLinkData;
+    let safePathSum: number = 0;
+    let alertString: string = ""
+    for(let i = 0; i < nodes.length; i++){
+      // if safe path node, add to count
+      if(nodes[i].key.includes("SAFE")){ 
+        safePathSum += 1;
+        if(safePathSum > 1){ // If there'smore than one safe path
+          alertString += "Only one safe path is allowed.\n";
+          break;
+        }
+      }
+    }
+    for(let i = 0; i < links.length; i++){
+      // if link to safe node and not from an or node
+      if(links[i].to.includes("SAFE") && !links[i].from.includes("ROOT")){
+        alertString += "Safe path must be the child of the ROOT node.\n";
+        break;
+      }
+    }
+    // there should always be one more node than links
+    if((nodes.length-1) != links.length ){
+      alertString += "A tree property has been violated.\n"
+    }
+    if(alertString !== ""){
+      alert(alertString);
+      return false;
+    } else {
+      return true;
+    }
+  }
+}

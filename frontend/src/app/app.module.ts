@@ -12,6 +12,7 @@ import {MatListModule} from '@angular/material/list';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { MatIconModule} from '@angular/material/icon';
 import { FileSaverModule } from 'ngx-filesaver';
+import {MatRadioModule} from "@angular/material/radio";
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { FileSaverModule } from 'ngx-filesaver';
     MatFormFieldModule,
     MatIconModule,
     FileSaverModule,
+    MatRadioModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
