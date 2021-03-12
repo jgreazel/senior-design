@@ -3,200 +3,145 @@ import sys
 
 
 class Scenario:
-    """
-    A class used to represent an attack scenario
+  def __init__(self, attackKey, probability, cost):
+    self.probability = float(probability)
+    self.minDcost = cost
+    self.minDcostNode = attackKey
+    self.attackDict[attackKey] = [probability, cost]
 
-    Attributes
-    ----------
-    probabilty : float
-        probability of scenario occurring, 0-1
-    nodeKeys : [str]
-        list of node keys, each key represented by a string
+  def __str__(self): #OUTDATED
+    risk = str(round(float(treeRoot["impact"]) * self.probability, 4))
+    prob = str(round(self.probability, 4))
+    output = "risk: " + risk + "  \tprob: " + prob + "\t: "
+    for key in self.CHANGE:
+      output += key + " "
+    return output
 
-    Methods
-    -------
-    combine(scenario2)
-        Combines scenario2 with self
-    """
+  def toDict(self): #OUTDATED
+    risk = round(float(treeRoot["impact"]) * self.probability, 4)
+    prob = round(self.probability, 4)
+    leafKeys = self.CHANGE
+    dit = {
+      "risk" : risk,
+      "probability" : prob,
+      "leafKeys" : leafKeys
+      }
+    return dit
 
-    def __init__(self, probability, nodeKeys):
-        """
-        Initializes a scenario with the given probability and nodeKeys.
+  def addAttack(self, attackKey, probability, cost):
+    if self.attackDict.get(attackKey) != None:
+      return False
+    self.attackDict[attackKey] = [probability, cost]
+    self.probability *= probability
+    if(cost < self.minDcost):
+      self.minDcost = cost
+      self.minDcostNode = attackKey
+    return True
 
-        Parameters
-        ----------
-        probability : float?
-            The scenario's probability of occurring
-        nodeKeys : [str]
-            The list of nodes in the scenario
-        """
-        self.probability = float(probability)
-        self.nodeKeys = nodeKeys
-
-    def __str__(self):
-        """Returns nodes in scenario"""
-        # TODO: Check output with deeper tree
-        risk = str(round(float(treeRoot["impact"]) * self.probability, 4))
-        prob = str(round(self.probability, 4))
-        output = "risk: " + risk + "  \tprob: " + prob + "\t: "
-        for key in self.nodeKeys:
-            output += key + " "
-        return output
-
-    def toDict(self):
-        """Returns dictionary representation of scenario"""
-        risk = round(float(treeRoot["impact"]) * self.probability, 4)
-        prob = round(self.probability, 4)
-        leafKeys = self.nodeKeys
-        dit = {
-          "risk" : risk,
-          "probability" : prob,
-          "leafKeys" : leafKeys
-        }
-        return dit
-
-    def combine(self, scenario2):
-        """
-        Combine scenarios. Used in AND nodes.
-
-        Parameters
-        ----------
-        scenario2 : Scenario
-            The scenario to combine
-        """
-        prob = self.probability * scenario2.probability
-        keys = list(())
-        for key in self.nodeKeys:
-            keys.append(key)
-        for key in scenario2.nodeKeys:
-            keys.append(key)
-        return Scenario(prob, keys)
+  def combine(self, scenario2):
+    newScenario = None
+    keys = self.attackDict.keys()
+    for key in keys:
+      if newScenario == None:
+        newScenario = Scenario(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1])
+      else:
+        newScenario.addAttack(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1])
+    keys = scenario2.attackDict.keys()
+    for key in keys:
+      newScenario.addAttack(key, scenario2.attackDict.get(key)[0], scenario2.attackDict.get(key)[1])
+    return newScenario
 
 def normalize():
-    """
-    Normalizes probabilty of attacks in nodeList to sum to 1
-    """
-    sum = 0.0
-    for node in nodesList:
-        if node["key"][0] == "L":
-            sum += float(node["riskIndex"])
-    for node in nodesList:
-        node["riskIndex"] = float(node["riskIndex"]) / sum
-
+  sum = 0.0
+  for node in nodesList:
+    if node["key"][0] == "L":
+      sum += float(node["probability"])
+  for node in nodesList:
+    node["probability"] = float(node["probability"]) / sum
 
 def findRoot():
-    """Find root node."""
-    root = None
-    for n in nodesList:
-        hasParent = False
-        # Check if node exists as a destination in edge list
-        for e in edgesList:
-            if e["to"] == n["key"]:
-                hasParent = True
-                break
-        if not hasParent:
-            root = n
-            break
-    if root is None:
-        print("Error:: Cannot find root node")
-    return root
+  root = None
+  for n in nodesList:
+    hasParent = False
+    # Check if node exists as a destination in edge list
+    for e in edgesList:
+      if e["to"] == n["key"]:
+        hasParent = True
+        break
+    if not hasParent:
+      root = n
+      break
+  if root is None:
+      print("Error:: Cannot find root node")
+  return root
 
 def findAttackRoot(root):
-    """
-    Find root node of attack tree (that does not include safe path node).
-    
-    Parameters
-        ----------
-        root : Node (list)
-            Root of tree
-    """
-    children = findChildren(root)
-    for node in children:
-      if node["key"][0] != "L":
-        return node
-    print("Error:: Cannot find attack root node")
-    return root
-
+  children = findChildren(root)
+  for node in children:
+    if node["key"][0] != "L":
+      return node
+  print("Error:: Cannot find attack root node")
+  return root
 
 def findNode(key):
-    """
-    Finds the node with the given key.
-    
-    Parameters
-    ----------
-    key : str
-        Key of node to find
-    """
-    for node in nodesList:
-        if node["key"] == key:
-            return node
-    print("Error:: Could not find node with given key")
-
+  for node in nodesList:
+    if node["key"] == key:
+      return node
+  print("Error:: Could not find node with given key")
 
 def findChildren(node):
-    """
-    Searches edge list to find all children of given node.
-    
-    Parameters
-    ----------
-    node : Node
-        Node to find children of
-    """
-    children = list(())
-    for e in edgesList:
-        if e["from"] == node["key"]:
-            children.append(findNode(e["to"]))
-    return children
-
+  children = list(())
+  for e in edgesList:
+    if e["from"] == node["key"]:
+      children.append(findNode(e["to"]))
+  return children
 
 def findScenarios(node):
-    """
-    Recusive function for finding all scenarios from a given node.
-    
-    Parameters
-    ----------
-    node : Node
-        Node to find scenarios of
-    """
-    if node["key"][0] == "L":  # If leaf node
-        scenarioList = list(())
-        scenarioList.append(Scenario(node["riskIndex"], [node["key"]]))
-        return scenarioList
-    elif node["key"][0] == "O":  # If OR node
-        scenarioList = list(())
-        children = findChildren(node)
-        for child in children:
-            childScenarios = findScenarios(child)
-            for scenario in childScenarios:
-                scenarioList.append(scenario)
-        return scenarioList
-    elif node["key"][0] == "A":  # If AND node
-        scenarioList = list(())
-        tempList = list(())
-        childLists = list(())  # List of lists
-        children = findChildren(node)
-        for child in children:  # Create list of child scenario lists
-            childLists.append(findScenarios(child))
-        scenarioList = childLists[0]
-        for i in range(1, len(childLists)):  # Compare all combinations of scenarios
-            for scenario1 in scenarioList:
-                for scenario2 in childLists[i]:
-                    tempList.append(scenario1.combine(scenario2))
-            scenarioList = tempList
-            tempList = list(())
-        return scenarioList
-    else:
-        print("Error:: Could not determine node type")
+  if node["key"][0] == "L":  # If leaf node
+    singleList = findChildren(node)
+    scenarioList = list(())
+    scenarioList.append(Scenario(node["key"], node["probability"], singleList[0]["cost"]))
+    return scenarioList
+  elif node["key"][0] == "O":  # If OR node
+    scenarioList = list(())
+    children = findChildren(node)
+    for child in children:
+      childScenarios = findScenarios(child)
+      for scenario in childScenarios:
+        scenarioList.append(scenario)
+      return scenarioList
+  elif node["key"][0] == "A":  # If AND node
+    scenarioList = list(())
+    tempList = list(())
+    childLists = list(())  # List of lists
+    children = findChildren(node)
+    for child in children:  # Create list of child scenario lists
+      childLists.append(findScenarios(child))
+      scenarioList = childLists[0]
+      for i in range(1, len(childLists)):  # Compare all combinations of scenarios
+        for scenario1 in scenarioList:
+          for scenario2 in childLists[i]:
+            tempList.append(scenario1.combine(scenario2))
+          scenarioList = tempList
+      tempList = list(())
+      return scenarioList
+  else:
+    print("Error:: Could not determine node type")
+
+'''
 
 
-# Get object from JSON to List
+
+'''
+
+
 jsonObj = """
 {
   "nodeData": [
     {
       "key": "OR3",
       "text": "placeholderText",
-      "riskIndex": "0",
+      "probability": "0",
       "impact": "450",
       "color": "red",
       "shape": "andgate"
@@ -204,48 +149,48 @@ jsonObj = """
     {
       "key": "LEAF5",
       "text": "safePath",
-      "riskIndex": "8"
+      "probability": "8"
     },
     {
       "key": "AND",
       "text": "placeholderText",
-      "riskIndex": "0",
+      "probability": "0",
       "color": "red",
       "shape": "andgate"
     },
     {
       "key": "OR",
       "text": "placeholderText",
-      "riskIndex": "0",
+      "probability": "0",
       "color": "lightgreen",
       "shape": "orgate"
     },
     {
       "key": "LEAF",
       "text": "cyberAttack",
-      "riskIndex": "1.1"
+      "probability": "1.1"
     },
     {
       "key": "LEAF2",
       "text": "physicalAttack",
-      "riskIndex": "8.3"
+      "probability": "8.3"
     },
     {
       "key": "OR2",
       "text": "placeholderText",
-      "riskIndex": "0",
+      "probability": "0",
       "color": "lightgreen",
       "shape": "orgate"
     },
     {
       "key": "LEAF3",
       "text": "phishingAttack",
-      "riskIndex": "7.2"
+      "probability": "7.2"
     },
     {
       "key": "LEAF4",
       "text": "spyware",
-      "riskIndex": "3.4"
+      "probability": "3.4"
     }
   ],
   "edgeData": [
@@ -318,6 +263,7 @@ normalize()
 treeRoot = findRoot()
 attackRoot = findAttackRoot(treeRoot)
 
+acceptableRisk = treeRoot["acceptableRisk"]
 scenarios = findScenarios(attackRoot)
 
 scenList = []
@@ -326,3 +272,41 @@ for scen in scenarios:
 
 sendToFrontendJson = json.dumps(scenList)
 print(sendToFrontendJson)
+
+#ADT ALG
+
+"""
+tree:
+{
+  nodes :
+    root :
+      key : $$$
+      impact : ###          //impact
+      acceptableRisk : ###  //acceptable risk level 
+                              //QUESTION: Risk is (impact * probability). Is acceptable risk level a normalized probability multiplied by the impact or an actual risk value?
+                              //If it is a normalized probability, why is the impact/risk value meaningful?
+    gate :
+      key : $$$
+    leaf/safe path :
+      key : $$$
+      probability : ###     //probability
+    defense :
+      key : $$$
+      cost : $$$            //defender cost
+
+  edges :
+    from : $$$
+    to : $$$
+}
+
+scenario:   //just data storage concept, not for returning or receiving
+{
+  scenarios :
+    probability : ###
+    min_dcost : ###
+    attacks :
+      key : $$$
+        probability : ###
+        dcost : ###
+}
+"""
