@@ -12,15 +12,15 @@ import * as go from 'gojs';
 @Injectable({providedIn:'root'})
 export class ApiService {
  
-  baseURL: string = "http://localhost:3000/";
+  baseURL: string = "http://127.0.0.1:8000/api/hello-view/";//"http://localhost:3000/";
  
   constructor(private http: HttpClient) {
   }
  
   // example of a get request
   getNodeData(): Observable<Array<go.ObjectData>> {
-    console.log('get sample nodes '+ this.baseURL + 'nodeData')
-    return this.http.get<Array<go.ObjectData>>(this.baseURL + 'nodeData')
+    console.log('get sample nodes '+ this.baseURL)
+    return this.http.get<Array<go.ObjectData>>(this.baseURL)
   }
  
   // example of a post request
@@ -29,7 +29,7 @@ export class ApiService {
     const body = {'nodeData': nodeData, 'edgeData': edgeData};
     console.log(JSON.stringify(body))
     return (
-      this.http.post(this.baseURL + 'nodeData', 
+      this.http.post(this.baseURL, 
       JSON.stringify(body), {'headers': headers})
     )
   }
