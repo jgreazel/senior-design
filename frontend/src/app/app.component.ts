@@ -23,6 +23,8 @@ export class AppComponent {
   @ViewChild('myPalette', { static: true }) public myPaletteComponent: PaletteComponent;
 
   public showUpload: boolean = false;
+  public engineOptions = ['Attack Tree', 'Attack-Defense Tree', 'Game Theory'];
+  public selectedEngine = 'Attack Tree';
   renderUploadDiv(){
     this.showUpload = !this.showUpload;
   }
@@ -247,7 +249,15 @@ export class AppComponent {
     return palette;
   }
 
-  public paletteNodeData: Array<go.ObjectData> = [
+  public ATreePalette = [
+    { key: 'AND',  color: 'red', shape: 'andgate' },
+    { key: 'OR',  color: 'green', shape: 'orgate' },
+    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0'},
+    { key: 'LEAF', text: 'placeholderText', defenseCost: '0', probability: '0', color: 'blue', shape: 'square' },
+    { key: 'SAFE_PATH', text: 'Safe Path', defenseCost: '0', probability: '0', color: 'lightblue', shape: 'square' }
+  ];
+  
+  public ADTreePalette = [
     { key: 'AND',  color: 'red', shape: 'andgate' },
     { key: 'OR',  color: 'green', shape: 'orgate' },
     { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0'},
@@ -255,6 +265,9 @@ export class AppComponent {
     { key: 'SAFE_PATH', text: 'Safe Path', defenseCost: '0', probability: '0', color: 'lightblue', shape: 'square' },
     { key: 'DEFENSE_NODE', text: 'Defense', defenseCost: '0', impact: '0', color: 'yellow', shape: 'circle' }
   ];
+
+  public paletteNodeData: Array<go.ObjectData> = this.selectedEngine === 'Attack Tree' ? this.ATreePalette : this.ADTreePalette;
+
   public paletteLinkData: Array<go.ObjectData> = [
 
   ];

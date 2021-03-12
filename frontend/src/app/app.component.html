@@ -11,6 +11,9 @@
       <mat-icon>get_app</mat-icon>
       <div class="button-text">Save</div>
     </button> -->
+    <select [(ngModel)]="selectedEngine" value="Attack Tree">
+      <option *ngFor="let engine of engineOptions">{{engine}}</option>
+    </select>
     <button (click)="analyzeData()">
       <mat-icon>cached</mat-icon>
       <div class="button-text">Analyze</div>
@@ -32,10 +35,10 @@
   <label for="file">Choose File</label>
   <input type="file" id="file" (change)="handleFileInput($event.target.files)">
 </div>
-<h2 class = "impactBox">
+<!-- <h2 class = "impactBox">
   <label for="systemImpact" margin = "10px 5px">Impact of System Failure:</label>
   <input type="number" id="systemImpact" name="systemImpact" min="10" margin ="10px 5px">
-</h2>
+</h2> -->
 
 <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
 
@@ -56,7 +59,7 @@
 
 
 
-  <!-- <div class="clear left box">
+    <!-- <div class="clear left box">
     <h3>Links in app data</h3>
     <ul>
       <li *ngFor="let ld of diagramLinkData">
@@ -73,4 +76,4 @@
       </li>
     </ul>
   </div> -->
-</div>
+  </div>
