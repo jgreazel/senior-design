@@ -1,5 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from apiapp import prototype_alg 
+import json
+
 # from rest_framework import s
 # Create your views here.
 
@@ -14,7 +17,15 @@ class api_views(APIView):
 
     def post(self, request):
         test = request.data
-        return Response({'data:':test})
+        # test = "" + test
+        # print(test)
+        x = json.dumps(test)
+        print(x)
+        return Response(prototype_alg.api_request(x))
+        
+        #until merged just return this
+        # return Response(200)
+        # return Response({'data:':test})
 
     def put(self,request, pk=None):
         return Response({'method':"'PUT'"})
@@ -23,8 +34,8 @@ class api_views(APIView):
         return Response({'method:':'PATCH'})
     def delete(self,request,pk=None):
         return Response({'method':'DELETE'})
-    # def get_json(request):
-    #     if request.method == "POST":
-    #         print(request.POST)
-    #         json = JSONForm(request.POST)
-    #         return Response({'json: ': json })
+
+# def post_json(request):
+#     json = request.POST
+#     return 200
+
