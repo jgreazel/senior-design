@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from apiapp import prototype_alg 
+import json
 
 # from rest_framework import s
 # Create your views here.
@@ -16,10 +17,14 @@ class api_views(APIView):
 
     def post(self, request):
         test = request.data
-        # return prototype_alg.api_request(test)
+        # test = "" + test
+        # print(test)
+        x = json.dumps(test)
+        print(x)
+        return Response(prototype_alg.api_request(x))
         
         #until merged just return this
-        return Response(200)
+        # return Response(200)
         # return Response({'data:':test})
 
     def put(self,request, pk=None):

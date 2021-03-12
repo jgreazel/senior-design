@@ -72,7 +72,7 @@ class Scenario:
             keys.append(key)
         return Scenario(prob, keys)
 
-def normalize():
+def normalize(nodesList):
     """
     Normalizes probabilty of attacks in nodeList to sum to 1
     """
@@ -84,7 +84,7 @@ def normalize():
         node["riskIndex"] = float(node["riskIndex"]) / sum
 
 
-def findRoot():
+def findRoot(nodesList):
     """Find root node."""
     root = None
     for n in nodesList:
@@ -101,7 +101,7 @@ def findRoot():
         print("Error:: Cannot find root node")
     return root
 
-def findAttackRoot(root):
+def findAttackRoot(root,edgesList):
     """
     Find root node of attack tree (that does not include safe path node).
     
@@ -110,7 +110,7 @@ def findAttackRoot(root):
         root : Node (list)
             Root of tree
     """
-    children = findChildren(root)
+    children = findChildren(root,edgesList)
     for node in children:
       if node["key"][0] != "L":
         return node
@@ -133,7 +133,7 @@ def findNode(key):
     print("Error:: Could not find node with given key")
 
 
-def findChildren(node):
+def findChildren(node,edgesList):
     """
     Searches edge list to find all children of given node.
     
@@ -149,7 +149,7 @@ def findChildren(node):
     return children
 
 
-def findScenarios(node):
+def findScenarios(node,edgesList):
     """
     Recusive function for finding all scenarios from a given node.
     
@@ -164,9 +164,9 @@ def findScenarios(node):
         return scenarioList
     elif node["key"][0] == "O":  # If OR node
         scenarioList = list(())
-        children = findChildren(node)
+        children = findChildren(node,edgesList)
         for child in children:
-            childScenarios = findScenarios(child)
+            childScenarios = findScenarios(child,edgesList)
             for scenario in childScenarios:
                 scenarioList.append(scenario)
         return scenarioList
@@ -174,9 +174,9 @@ def findScenarios(node):
         scenarioList = list(())
         tempList = list(())
         childLists = list(())  # List of lists
-        children = findChildren(node)
+        children = findChildren(node,edgesList)
         for child in children:  # Create list of child scenario lists
-            childLists.append(findScenarios(child))
+            childLists.append(findScenarios(child,edgesList))
         scenarioList = childLists[0]
         for i in range(1, len(childLists)):  # Compare all combinations of scenarios
             for scenario1 in scenarioList:
@@ -308,24 +308,24 @@ jsonObj = """
   ]
 }
 """
-jsonData = json.loads(jsonObj)
+# jsonData = json.loads(jsonObj)
 
-nodesList = jsonData["nodeData"]
-edgesList = jsonData["edgeData"]
+# nodesList = jsonData["nodeData"]
+# edgesList = jsonData["edgeData"]
 
-normalize()
+# normalize()
 
-treeRoot = findRoot()
-attackRoot = findAttackRoot(treeRoot)
+# treeRoot = findRoot()
+# attackRoot = findAttackRoot(treeRoot)
 
-scenarios = findScenarios(attackRoot)
+# scenarios = findScenarios(attackRoot)
 
-scenList = []
-for scen in scenarios:
-    scenList.append(scen.toDict())
+# scenList = []
+# for scen in scenarios:
+#     scenList.append(scen.toDict())
 
-sendToFrontendJson = json.dumps(scenList)
-print(sendToFrontendJson)
+# sendToFrontendJson = json.dumps(scenList)
+# print(sendToFrontendJson)
 
 def api_request(frontend_json):
     jsonData = json.loads(frontend_json)
@@ -333,12 +333,12 @@ def api_request(frontend_json):
     nodesList = jsonData["nodeData"]
     edgesList = jsonData["edgeData"]
 
-    normalize()
+    normalize(nodesList)
 
-    treeRoot = findRoot()
-    attackRoot = findAttackRoot(treeRoot)
+    treeRoot = findRoot(nodesList)
+    attackRoot = findAttackRoot(treeRoot,edgesList)
 
-    scenarios = findScenarios(attackRoot)
+    scenarios = findScenarios(attackRoot,edgesList)
 
     scenList = []
     for scen in scenarios:
