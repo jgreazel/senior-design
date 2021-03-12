@@ -129,12 +129,14 @@ def findScenarios(node):
     print("Error:: Could not determine node type")
 
 '''
-
-
-
+Go through all scenarios and make a list of ones above the acceptable risk threshold
+Make list of attacks that appear in multiple of these scenarios
+Compile combinations of defenses using attacks from the above list and the min cost attacks of a scenario such that each combination includes defenses that
+  would protect against all scenarios above the acceptable risk threshold
+Find the lowest cost option (or options) for return
 '''
 
-
+#Example JSON insufficient for ADT rn
 jsonObj = """
 {
   "nodeData": [
@@ -266,6 +268,7 @@ attackRoot = findAttackRoot(treeRoot)
 acceptableRisk = treeRoot["acceptableRisk"]
 scenarios = findScenarios(attackRoot)
 
+#None of stuff below would work rn
 scenList = []
 for scen in scenarios:
     scenList.append(scen.toDict())
