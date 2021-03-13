@@ -20,7 +20,7 @@ class Scenario:
         Combines scenario2 with self
     """
 
-    def __init__(self, probability, impact, nodeKeys):
+    def __init__(self, probability, cost, nodeKeys):
         """
         Initializes a scenario with the given probability and nodeKeys.
 
@@ -28,30 +28,37 @@ class Scenario:
         ----------
         probability : float?
             The scenario's probability of occurring
-        impact : float?
-            The scenario's impact
+        cost : float?
+            The scenario's cost
         nodeKeys : [str]
             The list of nodes in the scenario
         """
         self.probability = float(probability)
-        self.impact = float(impact)
+        self.cost = float(cost)
         self.nodeKeys = nodeKeys
 
     def __str__(self):
         """Returns nodes in scenario"""
         # TODO: Check output with deeper tree
-        risk = str(round(self.impact * self.probability, 3))
+        # risk = str(round(self.cost * self.probability, 3))
         prob = str(round(self.probability, 4))
-        impact = str(round(self.impact, 2))
+        cost = str(round(self.cost, 2))
+        weighted_cost = str(round(self.get_cost(), 4))
         output = (
-            "risk: " + risk + "  \tprob: " + prob + "  \timpact: " + impact + "\t: "
+            "prob: "
+            + prob
+            + "  \tcost: "
+            + cost
+            + "\tweighted cost: "
+            + weighted_cost
+            + "\t: "
         )
         for key in self.nodeKeys:
             output += key + " "
         return output
 
     def get_cost(self):
-        cost = self.probability * self.impact
+        cost = self.cost * self.probability
         return cost
 
     def combine(self, scenario2):
@@ -64,13 +71,13 @@ class Scenario:
             The scenario to combine
         """
         prob = self.probability * scenario2.probability
-        impact = self.impact + scenario2.impact
+        cost = self.cost + scenario2.cost
         keys = list(())
         for key in self.nodeKeys:
             keys.append(key)
         for key in scenario2.nodeKeys:
             keys.append(key)
-        return Scenario(prob, impact, keys)
+        return Scenario(prob, cost, keys)
 
 
 def normalize():
@@ -158,12 +165,12 @@ def findScenarios(node):
     if node["key"][0] == "L":  # If leaf node
         scenarioList = list(())
         defenseList = list(())
-        scenarioList.append(Scenario(node["riskIndex"], node["impact"], [node["key"]]))
+        scenarioList.append(Scenario(node["riskIndex"], node["cost"], [node["key"]]))
         defense = findChildren(node)
         if len(defense) > 0:
             defenseList.append(
                 Scenario(
-                    defense[0]["riskIndex"], defense[0]["impact"], [defense[0]["key"]]
+                    defense[0]["riskIndex"], defense[0]["cost"], [defense[0]["key"]]
                 )
             )
         return scenarioList, defenseList
@@ -217,8 +224,8 @@ def findScenarios(node):
 
 def nasheq(impact, attack_costs, defense_costs):
     """
-    Computes the nash equilibrium for the given impacts, attack costs,
-    and defense costs. Currently expects 1D parameters of equal length.
+    Computes the nash equilibrium for the given impact, attack costs,
+    and defense costs.
 
     Returns an equilibria generator.
     """
@@ -268,13 +275,13 @@ jsonObj = """
             "key": "LEAF",
             "text": "cyberAttack",
             "riskIndex": "1.1",
-            "impact": "89"
+            "cost": "89"
         },
         {
             "key": "LEAF2",
             "text": "physicalAttack",
             "riskIndex": "8.3",
-            "impact": "11"
+            "cost": "11"
         },
         {
             "key": "OR2",
@@ -287,37 +294,37 @@ jsonObj = """
             "key": "LEAF3",
             "text": "phishingAttack",
             "riskIndex": "7.2",
-            "impact": "231"
+            "cost": "231"
         },
         {
             "key": "LEAF4",
             "text": "spyware",
             "riskIndex": "3.4",
-            "impact": "20"
+            "cost": "20"
         },
         {
             "key": "DEFENSE3",
             "text": "Defense 3",
             "riskIndex": "1",
-            "impact": "4"
+            "cost": "42"
         },
         {
             "key": "DEFENSE4",
             "text": "Defense 4",
             "riskIndex": "1",
-            "impact": "5"
+            "cost": "35"
         },
         {
             "key": "DEFENSE2",
             "text": "Defense 2",
             "riskIndex": "1",
-            "impact": "3"
+            "cost": "32"
         },
         {
             "key": "DEFENSE1",
             "text": "Defense 1",
             "riskIndex": "1",
-            "impact": "6.1"
+            "cost": "61"
         }
     ],
     "edgeData": [
