@@ -2,40 +2,22 @@ import json
 import sys
 
 
-class Scenario:
-  def __init__(self, attackKey, probability, cost):
+class ADTScenario:
+  def __init__(self, attackKey, probability, defendedProbability, cost):
     self.probability = float(probability)
-    self.minDcost = cost
-    self.minDcostNode = attackKey
-    self.attackDict[attackKey] = [probability, cost]
+    #self.minDcost = cost
+    #self.minDcostNode = attackKey
+    roi = (defendedProbability - probability) / cost
+    self.attackDict[attackKey] = [probability, defendedProbability, roi, cost]
 
-  def __str__(self): #OUTDATED
-    risk = str(round(float(treeRoot["impact"]) * self.probability, 4))
-    prob = str(round(self.probability, 4))
-    output = "risk: " + risk + "  \tprob: " + prob + "\t: "
-    for key in self.CHANGE:
-      output += key + " "
-    return output
-
-  def toDict(self): #OUTDATED
-    risk = round(float(treeRoot["impact"]) * self.probability, 4)
-    prob = round(self.probability, 4)
-    leafKeys = self.CHANGE
-    dit = {
-      "risk" : risk,
-      "probability" : prob,
-      "leafKeys" : leafKeys
-      }
-    return dit
-
-  def addAttack(self, attackKey, probability, cost):
+  def addAttack(self, attackKey, probability, defendedProbability, roi, cost):
     if self.attackDict.get(attackKey) != None:
       return False
-    self.attackDict[attackKey] = [probability, cost]
+    self.attackDict[attackKey] = [probability, defendedProbability, roi, cost]
     self.probability *= probability
-    if(cost < self.minDcost):
-      self.minDcost = cost
-      self.minDcostNode = attackKey
+    #if(cost < self.minDcost):
+    #  self.minDcost = cost
+    #  self.minDcostNode = attackKey
     return True
 
   def combine(self, scenario2):
@@ -43,98 +25,114 @@ class Scenario:
     keys = self.attackDict.keys()
     for key in keys:
       if newScenario == None:
-        newScenario = Scenario(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1])
+        newScenario = ADTScenario(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1], self.attackDict.get(key)[3])
       else:
-        newScenario.addAttack(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1])
+        newScenario.addAttack(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1], self.attackDict.get(key)[2], self.attackDict.get(key)[3])
     keys = scenario2.attackDict.keys()
     for key in keys:
-      newScenario.addAttack(key, scenario2.attackDict.get(key)[0], scenario2.attackDict.get(key)[1])
+      newScenario.addAttack(key, scenario2.attackDict.get(key)[0], scenario2.attackDict.get(key)[1], self.attackDict.get(key)[2], self.attackDict.get(key)[3])
     return newScenario
 
-def normalize():
-  sum = 0.0
-  for node in nodesList:
-    if node["key"][0] == "L":
-      sum += float(node["probability"])
-  for node in nodesList:
-    node["probability"] = float(node["probability"]) / sum
+class ADTAnalysis:
+  def __init__(self, jsonData):
+    self.nodesList = jsonData["nodeData"]
+    self.edgesList = jsonData["edgeData"]
+    self.investedNodes = list()
 
-def findRoot():
-  root = None
-  for n in nodesList:
-    hasParent = False
-    # Check if node exists as a destination in edge list
-    for e in edgesList:
-      if e["to"] == n["key"]:
-        hasParent = True
+    self.normalize()
+
+    treeRoot = self.findRoot()
+    attackRoot = self.findAttackRoot(treeRoot)
+
+    self.acceptableRisk = treeRoot["acceptableRisk"]
+    self.impact = treeRoot["impact"]
+    self.budget = treeRoot["budget"]
+    self.scenarios = self.findScenarios(attackRoot)
+    self.scenarios.sort(reverse=True, key=lambda x: x.probability)
+    return
+
+  def normalize(self):
+    sum = 0.0
+    for node in self.nodesList:
+      if node["key"][0] == "L":
+        sum += float(node["probability"])
+    for node in self.nodesList:
+      node["probability"] = float(node["probability"]) / sum
+      node["defendedProbability"] = float(node["defendedProbability"]) / sum
+
+  def analyzeTree(self):
+    #TODO
+    attackRoot = self.findAttackRoot(self.treeRoot)
+    return
+
+  def findRoot(self):
+    root = None
+    for n in self.nodesList:
+      hasParent = False
+      # Check if node exists as a destination in edge list
+      for e in self.edgesList:
+        if e["to"] == n["key"]:
+          hasParent = True
+          break
+      if not hasParent:
+        root = n
         break
-    if not hasParent:
-      root = n
-      break
-  if root is None:
-      print("Error:: Cannot find root node")
-  return root
+    if root is None:
+        print("Error:: Cannot find root node")
+    return root
 
-def findAttackRoot(root):
-  children = findChildren(root)
-  for node in children:
-    if node["key"][0] != "L":
-      return node
-  print("Error:: Cannot find attack root node")
-  return root
+  def findAttackRoot(self, root):
+    children = self.findChildren(root)
+    for node in children:
+      if node["key"][0] != "L":
+        return node
+    print("Error:: Cannot find attack root node")
+    return root
 
-def findNode(key):
-  for node in nodesList:
-    if node["key"] == key:
-      return node
-  print("Error:: Could not find node with given key")
+  def findNode(self, key):
+    for node in self.nodesList:
+      if node["key"] == key:
+        return node
+    print("Error:: Could not find node with given key")
 
-def findChildren(node):
-  children = list(())
-  for e in edgesList:
-    if e["from"] == node["key"]:
-      children.append(findNode(e["to"]))
-  return children
+  def findChildren(self, node):
+    children = list(())
+    for e in self.edgesList:
+      if e["from"] == node["key"]:
+        children.append(self.findNode(e["to"]))
+    return children
 
-def findScenarios(node):
-  if node["key"][0] == "L":  # If leaf node
-    singleList = findChildren(node)
-    scenarioList = list(())
-    scenarioList.append(Scenario(node["key"], node["probability"], singleList[0]["cost"]))
-    return scenarioList
-  elif node["key"][0] == "O":  # If OR node
-    scenarioList = list(())
-    children = findChildren(node)
-    for child in children:
-      childScenarios = findScenarios(child)
-      for scenario in childScenarios:
-        scenarioList.append(scenario)
+  def findScenarios(self, node):
+    if node["key"][0] == "L":  # If leaf node
+      singleList = self.findChildren(node)
+      scenarioList = list(())
+      scenarioList.append(ADTScenario(node["key"], node["probability"], node["defendedProbability"], singleList[0]["cost"]))
       return scenarioList
-  elif node["key"][0] == "A":  # If AND node
-    scenarioList = list(())
-    tempList = list(())
-    childLists = list(())  # List of lists
-    children = findChildren(node)
-    for child in children:  # Create list of child scenario lists
-      childLists.append(findScenarios(child))
-      scenarioList = childLists[0]
-      for i in range(1, len(childLists)):  # Compare all combinations of scenarios
-        for scenario1 in scenarioList:
-          for scenario2 in childLists[i]:
-            tempList.append(scenario1.combine(scenario2))
-          scenarioList = tempList
+    elif node["key"][0] == "O":  # If OR node
+      scenarioList = list(())
+      children = self.findChildren(node)
+      for child in children:
+        childScenarios = self.findScenarios(child)
+        for scenario in childScenarios:
+          scenarioList.append(scenario)
+        return scenarioList
+    elif node["key"][0] == "A":  # If AND node
+      scenarioList = list(())
       tempList = list(())
-      return scenarioList
-  else:
-    print("Error:: Could not determine node type")
-
-'''
-Go through all scenarios and make a list of ones above the acceptable risk threshold
-Make list of attacks that appear in multiple of these scenarios
-Compile combinations of defenses using attacks from the above list and the min cost attacks of a scenario such that each combination includes defenses that
-  would protect against all scenarios above the acceptable risk threshold
-Find the lowest cost option (or options) for return
-'''
+      childLists = list(())  # List of lists
+      children = self.findChildren(node)
+      for child in children:  # Create list of child scenario lists
+        childLists.append(self.findScenarios(child))
+        scenarioList = childLists[0]
+        for i in range(1, len(childLists)):  # Compare all combinations of scenarios
+          for scenario1 in scenarioList:
+            for scenario2 in childLists[i]:
+              tempList.append(scenario1.combine(scenario2))
+            scenarioList = tempList
+        tempList = list(())
+        return scenarioList
+    else:
+      print("Error:: Could not determine node type")
 
 #Example JSON insufficient for ADT rn
 jsonObj = """
@@ -255,26 +253,30 @@ jsonObj = """
   ]
 }
 """
-jsonData = json.loads(jsonObj)
+#jsonData = json.loads(jsonObj)
 
-nodesList = jsonData["nodeData"]
-edgesList = jsonData["edgeData"]
+#nodesList = jsonData["nodeData"]
+#edgesList = jsonData["edgeData"]
 
-normalize()
+#normalize()
 
-treeRoot = findRoot()
-attackRoot = findAttackRoot(treeRoot)
+#treeRoot = findRoot()
+#attackRoot = findAttackRoot(treeRoot)
 
-acceptableRisk = treeRoot["acceptableRisk"]
-scenarios = findScenarios(attackRoot)
+#acceptableRisk = treeRoot["acceptableRisk"]
+#scenarios = findScenarios(attackRoot)
 
 #None of stuff below would work rn
-scenList = []
-for scen in scenarios:
-    scenList.append(scen.toDict())
+#scenList = []
+#for scen in scenarios:
+#    scenList.append(scen.toDict())
 
-sendToFrontendJson = json.dumps(scenList)
-print(sendToFrontendJson)
+def backendRequest(frontendJson):
+  jsonData = json.loads(frontendJson)
+  analysis = ADTAnalysis(jsonData)
+  sendToFrontendJson = json.dumps(scenList)
+  print(sendToFrontendJson)
+  return sendToFrontendJson
 
 #ADT ALG
 
