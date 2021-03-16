@@ -3,7 +3,7 @@ import * as go from 'gojs';
 import { DataSyncService, DiagramComponent, PaletteComponent } from 'gojs-angular';
 import * as _ from 'lodash';
 import { ApiService } from './api.service';
-import {MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { FileSaverService } from 'ngx-filesaver';
 import { FileSaverOptions } from 'file-saver';
 import { HttpClient } from '@angular/common/http';
@@ -25,18 +25,18 @@ export class AppComponent {
   public showUpload: boolean = false;
   public engineOptions = ['Attack Tree', 'Attack-Defense Tree', 'Game Theory'];
   public selectedEngine = 'Attack Tree';
-  renderUploadDiv(){
+  renderUploadDiv() {
     this.showUpload = !this.showUpload;
   }
 
   // TEST POST METHOD
   analyzeData() {
-    if(this.validateData()){ // data has been validated
+    if (this.validateData()) { // data has been validated
       this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
-      .subscribe(data => {
-        //do something meaningful with data here once connected to BE
-        console.log(data);
-      })
+        .subscribe(data => {
+          //do something meaningful with data here once connected to BE
+          console.log(data);
+        })
     }
   }
 
@@ -53,7 +53,7 @@ export class AppComponent {
   getReport() {
     //TODO
   }
-  
+
   // initialize diagram / templates
   public initDiagram(): go.Diagram {
 
@@ -116,9 +116,9 @@ export class AppComponent {
         }
       ),
       layout: $(go.TreeLayout, { isInitial: true, isOngoing: false }),
-        "InitialLayoutCompleted": function(e) {
+      "InitialLayoutCompleted": function (e) {
         // if not all Nodes have real locations, force a layout to happen
-        if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
+        if (!e.diagram.nodes.all(function (n) { return n.location.isReal(); })) {
           e.diagram.layoutDiagram(true);
         }
       }
@@ -139,34 +139,6 @@ export class AppComponent {
 
     // define the Node template
     dia.nodeTemplate =
-      // $(go.Node, 'Spot',
-      //   {
-      //     contextMenu:
-      //       $('ContextMenu',
-      //         $('ContextMenuButton',
-      //           $(go.TextBlock, 'Group'),
-      //           { click: function (e, obj) { e.diagram.commandHandler.groupSelection(); } },
-      //           new go.Binding('visible', '', function (o) {
-      //             return o.diagram.selection.count > 1;
-      //           }).ofObject())
-      //       )
-      //   },
-      //   $(go.Panel, 'Auto',
-      //     $(go.Shape, { stroke: null },
-      //       new go.Binding('fill', 'color')
-      //     ),
-      //     $(go.TextBlock, { margin: 10 },
-      //       new go.Binding('text', 'text'))
-      //   ),
-      //   // Ports
-      // makePort('t', go.Spot.TopCenter),
-      // makePort('b', go.Spot.BottomCenter)
-      // );
-
-      /**
-       * Brought this over from my palette nodeTemplate to assure shapes stay consistent
-       * I'll leave the previous nodeTemplate there commented out, incase I ditched something important
-       */
       $(go.Node, 'Auto',
         $(go.TextBlock, {
           font: '15px Courier'
@@ -250,23 +222,23 @@ export class AppComponent {
   }
 
   public ATreePalette = [
-    { key: 'AND',  color: 'red', shape: 'andgate' },
-    { key: 'OR',  color: 'green', shape: 'orgate' },
-    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0'},
+    { key: 'AND', color: 'red', shape: 'andgate' },
+    { key: 'OR', color: 'green', shape: 'orgate' },
+    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0' },
     { key: 'LEAF', text: 'placeholderText', defenseCost: '0', probability: '0', color: 'blue', shape: 'square' },
     { key: 'SAFE_PATH', text: 'Safe Path', defenseCost: '0', probability: '0', color: 'lightblue', shape: 'square' }
   ];
-  
+
   public ADTreePalette = [
-    { key: 'AND',  color: 'red', shape: 'andgate' },
-    { key: 'OR',  color: 'green', shape: 'orgate' },
-    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0'},
+    { key: 'AND', color: 'red', shape: 'andgate' },
+    { key: 'OR', color: 'green', shape: 'orgate' },
+    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0' },
     { key: 'LEAF', text: 'placeholderText', defenseCost: '0', probability: '0', color: 'blue', shape: 'square' },
     { key: 'SAFE_PATH', text: 'Safe Path', defenseCost: '0', probability: '0', color: 'lightblue', shape: 'square' },
     { key: 'DEFENSE_NODE', text: 'Defense', defenseCost: '0', impact: '0', color: 'yellow', shape: 'circle' }
   ];
 
-  public paletteNodeData: Array<go.ObjectData> = this.selectedEngine === 'Attack Tree' ? this.ATreePalette : this.ADTreePalette;
+  public paletteNodeData: Array<go.ObjectData> = this.ATreePalette;
 
   public paletteLinkData: Array<go.ObjectData> = [
 
@@ -288,7 +260,7 @@ export class AppComponent {
 
   // added dependecy injection for api service
   constructor(
-    private cdr: ChangeDetectorRef, 
+    private cdr: ChangeDetectorRef,
     private apiService: ApiService,
     private httpClient: HttpClient,
     private fileSaverService: FileSaverService) { }
@@ -356,7 +328,7 @@ export class AppComponent {
     }
     this.text = "";
     this.text += "{\n\"nodes\": " + JSON.stringify(this.diagramNodeData) + ",\n";
-    this.text +=  "\"links\": " + JSON.stringify(this.diagramLinkData) + "\n}";
+    this.text += "\"links\": " + JSON.stringify(this.diagramLinkData) + "\n}";
     const fileType = this.fileSaverService.genType(fileName);
     const txtBlob = new Blob([this.text], { type: fileType });
     this.fileSaverService.save(txtBlob, fileName, null, this.options);
@@ -376,7 +348,7 @@ export class AppComponent {
       this.diagramLinkData = data.links;
       console.log(this.diagramNodeData);
       console.log(this.diagramLinkData);
-      
+
       //this.skipsDiagramUpdate = false;
       // this.myDiagramComponent.diagram.layout.invalidateLayout();\
       // this.myDiagramComponent.diagram.requestUpdate();
@@ -388,33 +360,33 @@ export class AppComponent {
    *  true if data has been successfully validated
    *  false if there is an error in the data
    */
-  validateData(){
+  validateData() {
     let nodes = this.diagramNodeData;
     let links = this.diagramLinkData;
     let safePathSum: number = 0;
     let alertString: string = ""
-    for(let i = 0; i < nodes.length; i++){
+    for (let i = 0; i < nodes.length; i++) {
       // if safe path node, add to count
-      if(nodes[i].key.includes("SAFE")){ 
+      if (nodes[i].key.includes("SAFE")) {
         safePathSum += 1;
-        if(safePathSum > 1){ // If there'smore than one safe path
+        if (safePathSum > 1) { // If there'smore than one safe path
           alertString += "Only one safe path is allowed.\n";
           break;
         }
       }
     }
-    for(let i = 0; i < links.length; i++){
+    for (let i = 0; i < links.length; i++) {
       // if link to safe node and not from an or node
-      if(links[i].to.includes("SAFE") && !links[i].from.includes("ROOT")){
+      if (links[i].to.includes("SAFE") && !links[i].from.includes("ROOT")) {
         alertString += "Safe path must be the child of the ROOT node.\n";
         break;
       }
     }
     // there should always be one more node than links
-    if((nodes.length-1) != links.length ){
+    if ((nodes.length - 1) != links.length) {
       alertString += "A tree property has been violated.\n"
     }
-    if(alertString !== ""){
+    if (alertString !== "") {
       alert(alertString);
       return false;
     } else {

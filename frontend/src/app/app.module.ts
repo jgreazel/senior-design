@@ -6,6 +6,7 @@ import { GojsAngularModule } from 'gojs-angular';
 import { AppComponent } from './app.component';
 import {MatButtonModule} from '@angular/material/button';
 import { InspectorComponent } from './inspector/inspector.component';
+import { AdTreePalette } from './adTreePalette/adTreePalette.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSliderModule } from '@angular/material/slider';
 import {MatListModule} from '@angular/material/list';
@@ -17,7 +18,8 @@ import {MatRadioModule} from "@angular/material/radio";
 @NgModule({
   declarations: [
     AppComponent,
-    InspectorComponent
+    InspectorComponent,
+    AdTreePalette
   ],
   imports: [
     BrowserModule,

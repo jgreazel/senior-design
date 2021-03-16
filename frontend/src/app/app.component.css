@@ -19,14 +19,38 @@ body {
 
 .button-row {
   float: right;
+  margin-top: -10px;
+  align-content: center;
 }
 
 .choose-file {
   float: right;
 }
 
+select {
+  padding: 0 5px; 
+  margin: 0 5px;
+  background: #3a3b3c;
+  border: none;
+  outline: none;
+  border-radius: 25px;
+  height: 40px;
+  color: #dddfe4;
+  font-size: medium;
+  font-weight: bold;
+}
+
+select:hover {
+  background-color: #9f9f9f;
+  cursor: pointer;
+}
+
+select:focus {
+  background-color: #263851;
+}
+
 button {
-  margin: -10px 5px 0px 5px;
+  margin: 0 5px;
   background: #3a3b3c;
   border: none;
   outline: none;

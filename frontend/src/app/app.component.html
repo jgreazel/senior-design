@@ -2,16 +2,7 @@
 
 <h1 class='title'>CySec Game
   <div class="button-row">
-    <!-- <button (click)="getNodeData()">
-    <button (click)="getReport()">
-      <mat-icon>assignment</mat-icon>
-      <div class="button-text">Report</div>
-    </button>
-    <button (click)="getNodeData()">
-      <mat-icon>get_app</mat-icon>
-      <div class="button-text">Save</div>
-    </button> -->
-    <select [(ngModel)]="selectedEngine" value="Attack Tree">
+    <select [(ngModel)]="selectedEngine" value="engineOptions[0]">
       <option *ngFor="let engine of engineOptions">{{engine}}</option>
     </select>
     <button (click)="analyzeData()">
@@ -35,20 +26,17 @@
   <label for="file">Choose File</label>
   <input type="file" id="file" (change)="handleFileInput($event.target.files)">
 </div>
-<!-- <h2 class = "impactBox">
-  <label for="systemImpact" margin = "10px 5px">Impact of System Failure:</label>
-  <input type="number" id="systemImpact" name="systemImpact" min="10" margin ="10px 5px">
-</h2> -->
 
 <app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
 
 
 <div class="page-section">
   <div class="left">
-    <gojs-palette #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
+    <gojs-palette *ngIf="selectedEngine==engineOptions[0]" #myPalette [initPalette]='initPalette' [divClassName]='paletteDivClassName'
       [nodeDataArray]='paletteNodeData' [linkDataArray]='paletteLinkData' [modelData]='paletteModelData'
       (modelChange)='paletteModelChange($event)' [skipsPaletteUpdate]='skipsPaletteUpdate'>
     </gojs-palette>
+    <ad-tree-palette *ngIf="selectedEngine!=engineOptions[0]"></ad-tree-palette>
   </div>
 
   <div class="clear left">
@@ -56,24 +44,4 @@
       [linkDataArray]='diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='diagramModelData'
       [skipsDiagramUpdate]='skipsDiagramUpdate' (modelChange)='diagramModelChange($event)'>
     </gojs-diagram>
-
-
-
-    <!-- <div class="clear left box">
-    <h3>Links in app data</h3>
-    <ul>
-      <li *ngFor="let ld of diagramLinkData">
-        Link Key: {{ld.key}}, To: {{ld.to}}, From: {{ ld.from }}
-      </li>
-    </ul>
-  </div>
-
-  <div class="left box">
-    <h3>Nodes in app data</h3>
-    <ul>
-      <li *ngFor="let nd of diagramNodeData">
-        Node Key: {{nd.key}}, Text: {{nd.text}}, Risk Index: {{nd.probability}}
-      </li>
-    </ul>
-  </div> -->
   </div>
