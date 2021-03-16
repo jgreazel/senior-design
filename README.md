@@ -2,18 +2,18 @@ CySec Game
 
 ## Front End
 -commands to be executed while in 'frontend' directory
-## Installation
+### Installation
 `npm install`
 
-## Run
+### Run
 `ng serve --open`
 
 
 ## Back End
 -commands to be executed while in 'backend/api' directory
 
-## Installation
+### Installation
 `python3 -m pip install Django`
 
-## Run 
+### Run 
 `python3 manage.py runserver`
