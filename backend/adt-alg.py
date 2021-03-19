@@ -1,6 +1,7 @@
 import json
 import sys
 
+#NOTE: Whenever the word 'cost' appears in this file, it is meaning cost of defense
 
 class ADTScenario:
   def __init__(self, attackKey, probability, defendedProbability, cost):
@@ -8,16 +9,23 @@ class ADTScenario:
     #self.minDcost = cost
     #self.minDcostNode = attackKey
     roi = (defendedProbability - probability) / cost
-    self.attackDict[attackKey] = [probability, defendedProbability, roi, cost]
+    self.attackDict[attackKey] = {
+      "prob" : probability, 
+      "dProb" : defendedProbability, 
+      "roi" : roi, 
+      "cost" : cost
+      }
 
   def addAttack(self, attackKey, probability, defendedProbability, roi, cost):
     if self.attackDict.get(attackKey) != None:
       return False
-    self.attackDict[attackKey] = [probability, defendedProbability, roi, cost]
+    self.attackDict[attackKey] = {
+      "prob" : probability, 
+      "dProb" : defendedProbability, 
+      "roi" : roi, 
+      "cost" : cost
+      }
     self.probability *= probability
-    #if(cost < self.minDcost):
-    #  self.minDcost = cost
-    #  self.minDcostNode = attackKey
     return True
 
   def combine(self, scenario2):
@@ -25,12 +33,12 @@ class ADTScenario:
     keys = self.attackDict.keys()
     for key in keys:
       if newScenario == None:
-        newScenario = ADTScenario(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1], self.attackDict.get(key)[3])
+        newScenario = ADTScenario(key, self.attackDict.get(key).get("prob"), self.attackDict.get(key).get("dProb"), self.attackDict.get(key).get("cost"))
       else:
-        newScenario.addAttack(key, self.attackDict.get(key)[0], self.attackDict.get(key)[1], self.attackDict.get(key)[2], self.attackDict.get(key)[3])
+        newScenario.addAttack(key,  self.attackDict.get(key).get("prob"), self.attackDict.get(key).get("dProb"), self.attackDict.get(key).get("roi"), self.attackDict.get(key).get("cost"))
     keys = scenario2.attackDict.keys()
     for key in keys:
-      newScenario.addAttack(key, scenario2.attackDict.get(key)[0], scenario2.attackDict.get(key)[1], self.attackDict.get(key)[2], self.attackDict.get(key)[3])
+      newScenario.addAttack(key, scenario2.attackDict.get(key).get("prob"), scenario2.attackDict.get(key).get("dProb"), scenario2.attackDict.get(key).get("roi"), scenario2.attackDict.get(key).get("cost")])
     return newScenario
 
 class ADTAnalysis:
@@ -47,6 +55,7 @@ class ADTAnalysis:
     self.acceptableRisk = treeRoot["acceptableRisk"]
     self.impact = treeRoot["impact"]
     self.budget = treeRoot["budget"]
+    self.budgetLeft = budget
     self.scenarios = self.findScenarios(attackRoot)
     self.scenarios.sort(reverse=True, key=lambda x: x.probability)
     return
@@ -62,7 +71,25 @@ class ADTAnalysis:
 
   def analyzeTree(self):
     #TODO
-    attackRoot = self.findAttackRoot(self.treeRoot)
+    defendedKeys = []
+    for scenario in self.scenarios: #Go through scenarios sorted by highest risk
+      keys = scenario.attackDict.keys()
+      keysByRoi = keys.sort(reverse=True, key=lambda x: scenario.attackDict.get(x).get("roi"))
+      for key in keysByRoi: #for attacks already defended by other runs across scenarios
+        if key in defendedKeys:
+          scenario.probability = (scenario.probability / scenario.attackDict.get(key).get("prob")) * scenario.attackDict.get(key).get("dProb")
+          keysByRoi.remove(key)
+      acceptable = (scenario.probability * self.impact) > self.acceptableRisk
+      for key in keysByRoi: #Go through attacks in scenario by highest return on investment
+        if acceptable:
+          #break?
+        attack = scenario.attackDict.get(key)
+        if attack.get("cost") <= budgetLeft:
+          defendedKeys.append(key)
+          scenario.probability = (scenario.probability / attack.get("prob")) * attack.get("dProb")
+          self.budgetLeft -= attack.get("cost")
+        
+    #attackRoot = self.findAttackRoot(self.treeRoot)
     return
 
   def findRoot(self):
