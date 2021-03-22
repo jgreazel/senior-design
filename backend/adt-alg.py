@@ -52,10 +52,10 @@ class ADTAnalysis:
     treeRoot = self.findRoot()
     attackRoot = self.findAttackRoot(treeRoot)
 
-    self.acceptableRisk = treeRoot["acceptableRisk"]
     self.impact = treeRoot["impact"]
+    self.acceptableRisk = treeRoot["acceptableRisk"] * self.impact #maybe
     self.budget = treeRoot["budget"]
-    self.budgetLeft = budget
+    self.budgetLeft = self.budget
     self.scenarios = self.findScenarios(attackRoot)
     self.scenarios.sort(reverse=True, key=lambda x: x.probability)
     return
@@ -79,16 +79,15 @@ class ADTAnalysis:
         if key in defendedKeys:
           scenario.probability = (scenario.probability / scenario.attackDict.get(key).get("prob")) * scenario.attackDict.get(key).get("dProb")
           keysByRoi.remove(key)
-      acceptable = (scenario.probability * self.impact) > self.acceptableRisk
+      #acceptable = (scenario.probability * self.impact) > self.acceptableRisk
       for key in keysByRoi: #Go through attacks in scenario by highest return on investment
-        if acceptable:
-          #break?
+        if (scenario.probability * self.impact) <= self.acceptableRisk:
+          break
         attack = scenario.attackDict.get(key)
-        if attack.get("cost") <= budgetLeft:
+        if attack.get("cost") <= self.budgetLeft:
           defendedKeys.append(key)
           scenario.probability = (scenario.probability / attack.get("prob")) * attack.get("dProb")
           self.budgetLeft -= attack.get("cost")
-        
     #attackRoot = self.findAttackRoot(self.treeRoot)
     return
 
