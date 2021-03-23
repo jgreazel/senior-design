@@ -14,12 +14,14 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import { MatIconModule} from '@angular/material/icon';
 import { FileSaverModule } from 'ngx-filesaver';
 import {MatRadioModule} from "@angular/material/radio";
+import { AdInspectorComponent } from './adInspector/adInspector.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InspectorComponent,
-    AdTreePalette
+    AdTreePalette,
+    AdInspectorComponent
   ],
   imports: [
     BrowserModule,
