@@ -27,8 +27,8 @@
   <input type="file" id="file" (change)="handleFileInput($event.target.files)">
 </div>
 
-<app-inspector [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
-
+<app-inspector *ngIf="selectedEngine==engineOptions[0]" [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></app-inspector>
+<ad-inspector *ngIf="selectedEngine!=engineOptions[0]" [selectedNode]='selectedNode' (onFormChange)='handleInspectorChange($event)'></ad-inspector>
 
 <div class="page-section">
   <div class="left">
