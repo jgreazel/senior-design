@@ -15,13 +15,16 @@ import { MatIconModule} from '@angular/material/icon';
 import { FileSaverModule } from 'ngx-filesaver';
 import {MatRadioModule} from "@angular/material/radio";
 import { AdInspectorComponent } from './adInspector/adInspector.component';
+import { GraphVarsForm } from './graphVarsForm/graphVarsForm.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     InspectorComponent,
     AdTreePalette,
-    AdInspectorComponent
+    AdInspectorComponent,
+    GraphVarsForm
   ],
   imports: [
     BrowserModule,

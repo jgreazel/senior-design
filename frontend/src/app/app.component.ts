@@ -25,6 +25,8 @@ export class AppComponent {
   public showUpload: boolean = false;
   public engineOptions = ['Attack Tree', 'Attack-Defense Tree', 'Game Theory'];
   public selectedEngine = 'Attack Tree';
+  public acceptableRiskThreshold = 0;
+  public defenseBudget = 0;
   renderUploadDiv() {
     this.showUpload = !this.showUpload;
   }
@@ -32,7 +34,7 @@ export class AppComponent {
   // TEST POST METHOD
   analyzeData() {
     if (this.validateData()) { // data has been validated
-      this.apiService.analyzeData(this.diagramNodeData, this.diagramLinkData)
+      this.apiService.analyzeData(this.selectedEngine, this.defenseBudget, this.acceptableRiskThreshold, this.diagramNodeData, this.diagramLinkData)
         .subscribe(data => {
           //do something meaningful with data here once connected to BE
           console.log(data);
@@ -280,6 +282,11 @@ export class AppComponent {
       }
     });
   } // end ngAfterViewInit
+
+  public handleGraphFormChange(graphData){
+    this.acceptableRiskThreshold = graphData.acceptableRiskThreshold;
+    this.defenseBudget = graphData.defenseBudget;
+  }
 
 
   public handleInspectorChange(newNodeData) {
