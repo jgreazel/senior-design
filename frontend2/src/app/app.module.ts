@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { GojsAngularModule } from 'gojs-angular';
 
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
@@ -14,17 +15,25 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 
+import { AtkTreePaletteComponent } from './atk-tree-palette/atk-tree-palette.component';
+import { AtkDefTreePaletteComponent } from './atk-def-tree-palette/atk-def-tree-palette.component';
+import { DiagramCanvasComponent } from './diagram-canvas/diagram-canvas.component';
+
 registerLocaleData(en);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AtkTreePaletteComponent,
+    AtkDefTreePaletteComponent,
+    DiagramCanvasComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    GojsAngularModule,
     NzGridModule,
     NzButtonModule,
     NzSelectModule,
