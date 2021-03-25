@@ -1,0 +1,25 @@
+<div nz-row nzGutter="12" nzJustify="end">
+  <div nz-col nzFlex="10">
+    <h1>CySec Game</h1>
+  </div>
+  <div nz-col>
+    <nz-select [(ngModel)]="selectedEngine">
+      <nz-option-group nzLabel="Attack Tree">
+        <nz-option nzValue="attackTree" nzLabel="Attack Tree"></nz-option>
+      </nz-option-group>
+      <nz-option-group nzLabel="Attack Defense Tree">
+        <nz-option nzValue="attackDefenseTree" nzLabel="Attack Defense Tree"></nz-option>
+        <nz-option nzValue="gameTheory" nzLabel="Game Theory"></nz-option>
+      </nz-option-group>
+    </nz-select>
+  </div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round">Analyze</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round">Save</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round">Upload</button></div>
+</div>
+
+<div nz-row nzGutter="12">
+  <div nz-col>
+    
+  </div>
+</div>
