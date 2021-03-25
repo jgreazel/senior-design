@@ -10,12 +10,22 @@ class ADTScenario:
     #self.minDcost = cost
     #self.minDcostNode = attackKey
     roi = (defendedProbability - probability) / cost
+    self.attackDict = {}
     self.attackDict[attackKey] = {
       "prob" : probability, 
       "dProb" : defendedProbability, 
       "roi" : roi, 
       "cost" : cost
       }
+
+  def __str__(self):
+    """Returns nodes in scenario"""
+    prob = str(round(self.probability, 4))
+    dprob = str(round(self.postdProbability, 4))
+    output = "dprob: " + dprob + "  \tprob: " + prob + "\t: "
+    for key in self.attackDict.keys():
+      output += key + " "
+    return output
 
   def addAttack(self, attackKey, probability, defendedProbability, roi, cost):
     if self.attackDict.get(attackKey) != None:
@@ -39,12 +49,12 @@ class ADTScenario:
         newScenario.addAttack(key,  self.attackDict.get(key).get("prob"), self.attackDict.get(key).get("dProb"), self.attackDict.get(key).get("roi"), self.attackDict.get(key).get("cost"))
     keys = scenario2.attackDict.keys()
     for key in keys:
-      newScenario.addAttack(key, scenario2.attackDict.get(key).get("prob"), scenario2.attackDict.get(key).get("dProb"), scenario2.attackDict.get(key).get("roi"), scenario2.attackDict.get(key).get("cost")])
+      newScenario.addAttack(key, scenario2.attackDict.get(key).get("prob"), scenario2.attackDict.get(key).get("dProb"), scenario2.attackDict.get(key).get("roi"), scenario2.attackDict.get(key).get("cost"))
     return newScenario
 
 class ADTAnalysis:
   def __init__(self, jsonData):
-    self.acceptableRisk = jsonData["acceptableRiskThreshold"]
+    self.acceptableRisk = float(jsonData["acceptableRiskThreshold"]) / 10.0
     self.budget = jsonData["defenseBudget"]
     self.budgetLeft = self.budget
 
@@ -56,35 +66,36 @@ class ADTAnalysis:
     treeRoot = self.findRoot()
     attackRoot = self.findAttackRoot(treeRoot)
 
-    self.impact = treeRoot["impact"]
+    self.impact = float(treeRoot["impact"])
     #self.acceptableRisk = treeRoot["acceptableRisk"] * self.impact #maybe
     #self.budget = treeRoot["budget"]
     
     self.scenarios = self.findScenarios(attackRoot)
-    self.scenarios = self.scenarios.sort(reverse=True, key=lambda x: x.probability)
+    self.scenarios.sort(reverse=True, key=lambda x: x.probability)
     return
 
   def __str__(self):
     # TODO: 
-    scens = self.scenarios.sort(reverse=True, key=lambda x: x.probability)
     output = ""
-    for scenario in scens:
-      risk = str(round(self.impact * scenario.probability, 4))
+    for scenario in self.scenarios:
+      risk = str(round(self.impact * scenario.postdProbability, 4))
       prob = str(round(scenario.probability, 4))
       dprob = str(round(scenario.postdProbability, 4))
-      output += "risk: " + risk + "  \tdprob: " + dprob + "\tprob: " + prob + "\t: "
+      output += "risk: " + risk + "  \tpstdP: " + dprob + "\tpredP: " + prob + "\tbudg: " + str(self.budget) + "\tcost: " + str(self.budgetLeft) + "\n\t "
       for key in scenario.attackDict.keys():
         output += key + " "
+      output += "\n"
     return output
 
   def normalize(self):
     sum = 0.0
     for node in self.nodesList:
       if node["key"][0] == "L":
-        sum += float(node["probability"])
+        sum += float(node["preDefenseProbability"])
     for node in self.nodesList:
-      node["probability"] = float(node["probability"]) / sum
-      node["defendedProbability"] = float(node["defendedProbability"]) / sum
+      if node["key"][0] == "L":
+        node["preDefenseProbability"] = node["preDefenseProbability"] / sum
+        node["postDefenseProbability"] = node["postDefenseProbability"] / sum
 
   def analyzeTree(self):
     #TODO
@@ -92,15 +103,15 @@ class ADTAnalysis:
     for scenario in self.scenarios: #Go through scenarios sorted by highest risk
       if scenario.probability <= self.acceptableRisk:
           break
-      keys = scenario.attackDict.keys()
-      keysByRoi = keys.sort(reverse=True, key=lambda x: scenario.attackDict.get(x).get("roi"))
+      keys = list(scenario.attackDict.keys())
+      keys.sort(reverse=True, key=lambda x: scenario.attackDict.get(x).get("roi"))
       prob = scenario.probability
-      for key in keysByRoi: #for attacks already defended by other runs across scenarios
+      for key in keys: #for attacks already defended by other runs across scenarios
         if key in defendedKeys:
           prob = (prob / scenario.attackDict.get(key).get("prob")) * scenario.attackDict.get(key).get("dProb")
-          keysByRoi.remove(key)
+          keys.remove(key)
       #acceptable = (scenario.probability * self.impact) > self.acceptableRisk
-      for key in keysByRoi: #Go through attacks in scenario by highest return on investment
+      for key in keys: #Go through attacks in scenario by highest return on investment
         if prob <= self.acceptableRisk: #prob * self.impact???
           break
         attack = scenario.attackDict.get(key)
@@ -132,25 +143,16 @@ class ADTAnalysis:
     return
 
   def findRoot(self):
-    root = None
     for n in self.nodesList:
-      hasParent = False
-      # Check if node exists as a destination in edge list
-      for e in self.edgesList:
-        if e["to"] == n["key"]:
-          hasParent = True
-          break
-      if not hasParent:
-        root = n
-        break
-    if root is None:
-        print("Error:: Cannot find root node")
-    return root
+      if(n["key"] == "ROOT_NODE"):
+        return n
+    print("Error:: Cannot find root node")
+    return None
 
   def findAttackRoot(self, root):
     children = self.findChildren(root)
     for node in children:
-      if node["key"][0] != "L":
+      if node["key"][0] != "S":
         return node
     print("Error:: Cannot find attack root node")
     return root
@@ -172,7 +174,7 @@ class ADTAnalysis:
     if node["key"][0] == "L":  # If leaf node
       singleList = self.findChildren(node)
       scenarioList = list(())
-      scenarioList.append(ADTScenario(node["key"], node["probability"], node["defendedProbability"], singleList[0]["cost"]))
+      scenarioList.append(ADTScenario(node["key"], node["preDefenseProbability"], node["postDefenseProbability"], singleList[0]["defenseCost"]))
       return scenarioList
     elif node["key"][0] == "O":  # If OR node
       scenarioList = list(())
@@ -181,7 +183,7 @@ class ADTAnalysis:
         childScenarios = self.findScenarios(child)
         for scenario in childScenarios:
           scenarioList.append(scenario)
-        return scenarioList
+      return scenarioList
     elif node["key"][0] == "A":  # If AND node
       scenarioList = list(())
       tempList = list(())
@@ -196,13 +198,15 @@ class ADTAnalysis:
               tempList.append(scenario1.combine(scenario2))
             scenarioList = tempList
         tempList = list(())
-        return scenarioList
+      return scenarioList
     else:
       print("Error:: Could not determine node type")
 
 #Example JSON insufficient for ADT rn
 jsonObj = """
 {
+    "acceptableRiskThreshold": 3,
+    "defenseBudget": 550,
     "nodeData": [{
         "key": "ROOT_NODE",
         "text": "Root Node",
@@ -387,30 +391,17 @@ jsonObj = """
     }]
 }
 """
-#jsonData = json.loads(jsonObj)
 
-#nodesList = jsonData["nodeData"]
-#edgesList = jsonData["edgeData"]
-
-#normalize()
-
-#treeRoot = findRoot()
-#attackRoot = findAttackRoot(treeRoot)
-
-#acceptableRisk = treeRoot["acceptableRisk"]
-#scenarios = findScenarios(attackRoot)
-
-#None of stuff below would work rn
-#scenList = []
-#for scen in scenarios:
-#    scenList.append(scen.toDict())
 
 def backendRequest(frontendJson):
   jsonData = json.loads(frontendJson)
   analysis = ADTAnalysis(jsonData)
-  sendToFrontendJson = json.dumps(scenList)
-  print(sendToFrontendJson)
-  return sendToFrontendJson
+  analysis.analyzeTree
+  print(analysis)
+
+  #sendToFrontendJson = json.dumps(scenList)
+  #print(sendToFrontendJson)
+  #return sendToFrontendJson
 
 #ADT ALG
 
