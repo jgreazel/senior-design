@@ -16,6 +16,7 @@ export class AtkDefTreePaletteComponent {
 
     palette.nodeTemplate =
       $(go.Node, 'Auto',
+      { selectionAdorned: false},
         $(go.Panel, "Vertical",
           $(go.Shape, {
             figure: 'circle',

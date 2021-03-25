@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import * as go from 'gojs';
-import { DataSyncService } from 'gojs-angular';
+import { DataSyncService, DiagramComponent } from 'gojs-angular';
 
 @Component({
   selector: 'diagram-canvas',
   templateUrl: './diagram-canvas.component.html',
   styleUrls: ['./diagram-canvas.component.css']
 })
-export class DiagramCanvasComponent {
+export class DiagramCanvasComponent extends DiagramComponent {
 
-  public initDiagram(): go.Diagram {
+  public initDiagram = () => {
 
     //create custom shape for and-gate
     go.Shape.defineFigureGenerator("AndGate", function (shape, w, h) {
@@ -94,6 +94,9 @@ export class DiagramCanvasComponent {
     // define the Node template
     dia.nodeTemplate =
       $(go.Node, 'Auto',
+        {
+          selectionAdorned: false,
+        },
         $(go.TextBlock, {
           font: '15px Courier'
         }, new go.Binding('text').makeTwoWay()),
@@ -123,10 +126,6 @@ export class DiagramCanvasComponent {
   public diagramLinkData: Array<go.ObjectData> = [
 
   ];
-
-  public function; displayImpact() {
-    document.getElementById("").innerHTML = "Hello World";
-  }
 
   public diagramDivClassName: string = 'diagramDiv';
   public diagramModelData = { prop: 'value' };

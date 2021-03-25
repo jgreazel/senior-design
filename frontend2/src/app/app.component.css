@@ -1,16 +1,17 @@
 @import "~ng-zorro-antd/ng-zorro-antd.min.css";
 
 .paletteDiv {
-  background: whitesmoke;
-  /* background: #999999; */
+  /* background: whitesmoke; */
+  background: #999999;
   width: 100%;
   height: 175px;
   border-radius: 4px;
 }
 
 .diagramDiv {
-  /* background: #999999; */
-  background: whitesmoke;
+  background: #999999;
+  /* background: #242526; */
+  /* background: whitesmoke; */
   width: 100%;
   height: 650px;
   border-radius: 4px;
@@ -18,4 +19,12 @@
 
 nz-select {
   width: 180px;
+}
+
+body{
+  background: #18191a;
+}
+
+h1{
+  color:white;
 }
