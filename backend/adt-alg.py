@@ -20,8 +20,8 @@ class ADTScenario:
 
   def __str__(self):
     """Returns nodes in scenario"""
-    prob = str(round(self.probability, 4))
-    dprob = str(round(self.postdProbability, 4))
+    prob = str(round(self.probability, 5))
+    dprob = str(round(self.postdProbability, 5))
     output = "dprob: " + dprob + "  \tprob: " + prob + "\t: "
     for key in self.attackDict.keys():
       output += key + " "
@@ -75,13 +75,18 @@ class ADTAnalysis:
     return
 
   def __str__(self):
-    # TODO: 
-    output = ""
+    output = "Acceptable Risk: " + str(self.acceptableRisk) + "\n"
+    output += "Budget: " + str(self.budget) + "\n"
+    output += "Cost: " + str(self.budget - self.budgetLeft) + "\n"
+    output += "Defended attacks: "
+    for key in self.investedNodes:
+        output += key + " "
+    output += "\n"
     for scenario in self.scenarios:
-      risk = str(round(self.impact * scenario.postdProbability, 4))
-      prob = str(round(scenario.probability, 4))
-      dprob = str(round(scenario.postdProbability, 4))
-      output += "risk: " + risk + "  \tpstdP: " + dprob + "\tpredP: " + prob + "\tbudg: " + str(self.budget) + "\tcost: " + str(self.budgetLeft) + "\n\t "
+      risk = str(round(self.impact * scenario.postdProbability, 5))
+      prob = str(round(scenario.probability, 5))
+      dprob = str(round(scenario.postdProbability, 5))
+      output += "risk: " + risk + "  \tprob: " + dprob + "\tpre-defense prob: " + prob + "\n\t "
       for key in scenario.attackDict.keys():
         output += key + " "
       output += "\n"
@@ -98,8 +103,6 @@ class ADTAnalysis:
         node["postDefenseProbability"] = node["postDefenseProbability"] / sum
 
   def analyzeTree(self):
-    #TODO
-    defendedKeys = []
     for scenario in self.scenarios: #Go through scenarios sorted by highest risk
       if scenario.probability <= self.acceptableRisk:
           break
@@ -107,7 +110,7 @@ class ADTAnalysis:
       keys.sort(reverse=True, key=lambda x: scenario.attackDict.get(x).get("roi"))
       prob = scenario.probability
       for key in keys: #for attacks already defended by other runs across scenarios
-        if key in defendedKeys:
+        if key in self.investedNodes:
           prob = (prob / scenario.attackDict.get(key).get("prob")) * scenario.attackDict.get(key).get("dProb")
           keys.remove(key)
       #acceptable = (scenario.probability * self.impact) > self.acceptableRisk
@@ -116,7 +119,7 @@ class ADTAnalysis:
           break
         attack = scenario.attackDict.get(key)
         if attack.get("cost") <= self.budgetLeft:
-          defendedKeys.append(key)
+          self.investedNodes.append(key)
           prob = (prob / attack.get("prob")) * attack.get("dProb")
           self.budgetLeft -= attack.get("cost")
     #attackRoot = self.findAttackRoot(self.treeRoot)
@@ -129,13 +132,13 @@ class ADTAnalysis:
       recalcProb = 0
       for key in keys: #for attacks already defended by other runs across scenarios
         if firstRun:
-          if key in defendedKeys:
+          if key in self.investedNodes:
             recalcProb = scenario.attackDict.get(key).get("dProb")
           else:
             recalcProb = scenario.attackDict.get(key).get("prob")
           firstRun = False
         else:
-          if key in defendedKeys:
+          if key in self.investedNodes:
             recalcProb = recalcProb * scenario.attackDict.get(key).get("dProb")
           else:
             recalcProb = recalcProb * scenario.attackDict.get(key).get("prob")
@@ -192,37 +195,63 @@ class ADTAnalysis:
       for child in children:  # Create list of child scenario lists
         childLists.append(self.findScenarios(child))
         scenarioList = childLists[0]
-        for i in range(1, len(childLists)):  # Compare all combinations of scenarios
-          for scenario1 in scenarioList:
-            for scenario2 in childLists[i]:
-              tempList.append(scenario1.combine(scenario2))
-            scenarioList = tempList
+      for i in range(1, len(childLists)):  # Compare all combinations of scenarios
+        for scenario1 in scenarioList:
+          for scenario2 in childLists[i]:
+            tempList.append(scenario1.combine(scenario2))
+          scenarioList = tempList
         tempList = list(())
       return scenarioList
     else:
       print("Error:: Could not determine node type")
 
+def trimJson(jso):
+  fluffStrs = ["text", "color", "shape", ]
+  for node in jso["nodeData"]:
+    keys = list(node.keys())
+    for key in keys:
+      if key in fluffStrs:
+        del node[key]
+  fluffStrs = ["fromPort", "toPort", "key"]
+  for edge in jso["edgeData"]:
+    keys = list(edge.keys())
+    for key in keys:
+      if key in fluffStrs:
+        del edge[key]
+        
+def backendRequest(frontendJson):
+  jsonData = json.loads(frontendJson)
+  trimJson(jsonData)
+  analysis = ADTAnalysis(jsonData)
+  analysis.analyzeTree()
+  print("\n")
+  print(analysis)
+
+  #sendToFrontendJson = json.dumps(scenList)
+  #print(sendToFrontendJson)
+  #return sendToFrontendJson
+
 #Example JSON insufficient for ADT rn
-jsonObj = """
+jsonObj1 = """
 {
-    "acceptableRiskThreshold": 3,
-    "defenseBudget": 550,
+    "acceptableRiskThreshold": 0.01,
+    "defenseBudget": 600,
     "nodeData": [{
         "key": "ROOT_NODE",
         "text": "Root Node",
-        "impact": 500
+        "impact": 5300
     }, {
         "key": "SAFE_PATH",
         "text": "Safe Path",
-        "probability": 2
-    }, {
-        "key": "OR",
-        "color": "green",
-        "shape": "orgate"
+        "probability": 1
     }, {
         "key": "AND",
         "color": "red",
         "shape": "andgate"
+    }, {
+        "key": "OR",
+        "color": "green",
+        "shape": "orgate"
     }, {
         "key": "AND2",
         "color": "red",
@@ -234,13 +263,13 @@ jsonObj = """
     }, {
         "key": "LEAF",
         "text": "placeholderText",
-        "preDefenseProbability": 9,
-        "postDefenseProbability": 5
+        "preDefenseProbability": 5,
+        "postDefenseProbability": 2
     }, {
         "key": "LEAF2",
         "text": "placeholderText",
-        "preDefenseProbability": 3,
-        "postDefenseProbability": 1
+        "preDefenseProbability": 8,
+        "postDefenseProbability": 4
     }, {
         "key": "LEAF3",
         "text": "placeholderText",
@@ -249,12 +278,12 @@ jsonObj = """
     }, {
         "key": "LEAF4",
         "text": "placeholderText",
-        "preDefenseProbability": 4,
-        "postDefenseProbability": 2
+        "preDefenseProbability": 1,
+        "postDefenseProbability": 0.5
     }, {
         "key": "LEAF5",
         "text": "placeholderText",
-        "preDefenseProbability": 5,
+        "preDefenseProbability": 2,
         "postDefenseProbability": 1
     }, {
         "key": "LEAF6",
@@ -262,117 +291,126 @@ jsonObj = """
         "preDefenseProbability": 8,
         "postDefenseProbability": 6
     }, {
+        "key": "LEAF7",
+        "text": "placeholderText",
+        "preDefenseProbability": 4,
+        "postDefenseProbability": 3
+    }, {
         "key": "DEFENSE_NODE",
         "text": "Defense",
-        "defenseCost": 100
+        "defenseCost": 500
     }, {
         "key": "DEFENSE_NODE2",
         "text": "Defense",
-        "defenseCost": 300
+        "defenseCost": 200
     }, {
         "key": "DEFENSE_NODE3",
         "text": "Defense",
-        "defenseCost": 250
+        "defenseCost": 350
     }, {
         "key": "DEFENSE_NODE4",
         "text": "Defense",
-        "defenseCost": 50
+        "defenseCost": 300
     }, {
         "key": "DEFENSE_NODE5",
         "text": "Defense",
-        "defenseCost": 80
+        "defenseCost": 200
     }, {
         "key": "DEFENSE_NODE6",
+        "text": "Defense",
+        "defenseCost": 100
+    }, {
+        "key": "DEFENSE_NODE7",
         "text": "Defense",
         "defenseCost": 250
     }],
     "edgeData": [{
         "from": "ROOT_NODE",
-        "to": "SAFE_PATH",
+        "to": "AND",
         "fromPort": "b",
         "toPort": "t",
         "key": -1
     }, {
         "from": "ROOT_NODE",
-        "to": "OR",
+        "to": "SAFE_PATH",
         "fromPort": "b",
         "toPort": "t",
         "key": -2
     }, {
-        "from": "OR",
-        "to": "AND2",
+        "from": "AND",
+        "to": "OR",
         "fromPort": "b",
         "toPort": "t",
         "key": -3
     }, {
-        "from": "OR",
-        "to": "AND",
+        "from": "AND",
+        "to": "AND2",
         "fromPort": "b",
         "toPort": "t",
         "key": -4
-    }, {
-        "from": "AND2",
-        "to": "OR2",
-        "fromPort": "b",
-        "toPort": "t",
-        "key": -5
-    }, {
-        "from": "OR",
-        "to": "LEAF6",
-        "fromPort": "b",
-        "toPort": "t",
-        "key": -6
-    }, {
-        "from": "OR2",
-        "to": "LEAF3",
-        "fromPort": "b",
-        "toPort": "t",
-        "key": -7
-    }, {
-        "from": "OR2",
-        "to": "LEAF4",
-        "fromPort": "b",
-        "toPort": "t",
-        "key": -8
-    }, {
-        "from": "AND2",
-        "to": "LEAF5",
-        "fromPort": "b",
-        "toPort": "t",
-        "key": -9
     }, {
         "from": "AND",
         "to": "LEAF",
         "fromPort": "b",
         "toPort": "t",
+        "key": -5
+    }, {
+        "from": "OR",
+        "to": "LEAF2",
+        "fromPort": "b",
+        "toPort": "t",
+        "key": -6
+    }, {
+        "from": "OR",
+        "to": "LEAF4",
+        "fromPort": "b",
+        "toPort": "t",
+        "key": -7
+    }, {
+        "from": "OR",
+        "to": "LEAF3",
+        "fromPort": "b",
+        "toPort": "t",
+        "key": -8
+    }, {
+        "from": "OR2",
+        "to": "LEAF5",
+        "fromPort": "b",
+        "toPort": "t",
+        "key": -9
+    }, {
+        "from": "OR2",
+        "to": "LEAF6",
+        "fromPort": "b",
+        "toPort": "t",
         "key": -10
     }, {
-        "from": "AND",
-        "to": "LEAF2",
+        "from": "AND2",
+        "to": "LEAF7",
         "fromPort": "b",
         "toPort": "t",
         "key": -11
     }, {
-        "from": "LEAF",
-        "to": "DEFENSE_NODE",
+        "from": "AND2",
+        "to": "OR2",
         "fromPort": "b",
         "toPort": "t",
         "key": -12
     }, {
         "from": "LEAF2",
-        "to": "DEFENSE_NODE2",
+        "to": "DEFENSE_NODE",
         "fromPort": "b",
         "toPort": "t",
         "key": -13
     }, {
         "from": "LEAF3",
-        "to": "DEFENSE_NODE3",
+        "to": "DEFENSE_NODE2",
         "fromPort": "b",
         "toPort": "t",
         "key": -14
     }, {
         "from": "LEAF4",
-        "to": "DEFENSE_NODE4",
+        "to": "DEFENSE_NODE3",
         "fromPort": "b",
         "toPort": "t",
         "key": -15
@@ -388,22 +426,111 @@ jsonObj = """
         "fromPort": "b",
         "toPort": "t",
         "key": -17
+    }, {
+        "from": "LEAF7",
+        "to": "DEFENSE_NODE7",
+        "fromPort": "b",
+        "toPort": "t",
+        "key": -18
+    }, {
+        "from": "LEAF",
+        "to": "DEFENSE_NODE4",
+        "fromPort": "b",
+        "toPort": "t",
+        "key": -19
+    }]
+}
+"""
+
+jsonObj2 = """
+{
+    "acceptableRiskThreshold": 2,
+    "defenseBudget": 550,
+    "nodeData": [{
+        "key": "ROOT_NODE",
+        "impact": 200
+    }, {
+        "key": "SAFE_PATH",
+        "probability": "0"
+    }, {
+        "key": "OR"
+    }, {
+        "key": "AND"
+    }, {
+        "key": "AND2"
+    }, {
+        "key": "OR2"
+    }, {
+        "key": "LEAF",
+        "preDefenseProbability": 5,
+        "postDefenseProbability": 2
+    }, {
+        "key": "LEAF2",
+        "preDefenseProbability": 7,
+        "postDefenseProbability": 3
+    }, {
+        "key": "LEAF3",
+        "preDefenseProbability": 9,
+        "postDefenseProbability": 3
+    }, {
+        "key": "DEFENSE_NODE",
+        "text": "Defense",
+        "defenseCost": 150
+    }, {
+        "key": "DEFENSE_NODE2",
+        "text": "Defense",
+        "defenseCost": 200
+    }, {
+        "key": "DEFENSE_NODE3",
+        "text": "Defense",
+        "defenseCost": 100
+    }],
+    "edgeData": [{
+        "from": "ROOT_NODE",
+        "to": "SAFE_PATH",
+        "key": -1
+    }, {
+        "from": "ROOT_NODE",
+        "to": "OR",
+        "key": -2
+    }, {
+        "from": "OR",
+        "to": "LEAF",
+        "key": -3
+    }, {
+        "from": "OR",
+        "to": "AND",
+        "key": -4
+    }, {
+        "from": "AND",
+        "to": "LEAF2",
+        "key": -5
+    }, {
+        "from": "AND",
+        "to": "LEAF3",
+        "key": -6
+    }, {
+        "from": "LEAF",
+        "to": "DEFENSE_NODE",
+        "key": -7
+    }, {
+        "from": "LEAF2",
+        "to": "DEFENSE_NODE2",
+        "key": -8
+    }, {
+        "from": "LEAF3",
+        "to": "DEFENSE_NODE3",
+        "key": -9
     }]
 }
 """
 
 
-def backendRequest(frontendJson):
-  jsonData = json.loads(frontendJson)
-  analysis = ADTAnalysis(jsonData)
-  analysis.analyzeTree
-  print(analysis)
+backendRequest(jsonObj1)
+#jsonData = json.loads(jsonObj)
+#trimJson(jsonData)
+#print(json.dumps(jsonData))
 
-  #sendToFrontendJson = json.dumps(scenList)
-  #print(sendToFrontendJson)
-  #return sendToFrontendJson
-
-#ADT ALG
 
 """
 tree:
