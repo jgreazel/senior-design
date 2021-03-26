@@ -4,3 +4,7 @@ form {
     width: 100%;
     border-radius: 4px;
 }
+
+input {
+    max-width: 200px;
+}
