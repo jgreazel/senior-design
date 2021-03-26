@@ -54,21 +54,20 @@ class ADTScenario:
 
 class ADTAnalysis:
   def __init__(self, jsonData):
-    self.acceptableRisk = float(jsonData["acceptableRiskThreshold"]) / 10.0
+    self.acceptableRisk = float(jsonData["acceptableRiskThreshold"])
     self.budget = jsonData["defenseBudget"]
     self.budgetLeft = self.budget
 
     self.nodesList = jsonData["nodeData"]
     self.edgesList = jsonData["edgeData"]
     self.investedNodes = list()
-
-    self.normalize()
+    
+    #TODO: Get safe node risk
+    self.normalizeTree()
     treeRoot = self.findRoot()
     attackRoot = self.findAttackRoot(treeRoot)
 
     self.impact = float(treeRoot["impact"])
-    #self.acceptableRisk = treeRoot["acceptableRisk"] * self.impact #maybe
-    #self.budget = treeRoot["budget"]
     
     self.scenarios = self.findScenarios(attackRoot)
     self.scenarios.sort(reverse=True, key=lambda x: x.probability)
@@ -92,7 +91,7 @@ class ADTAnalysis:
       output += "\n"
     return output
 
-  def normalize(self):
+  def normalizeTree(self):
     sum = 0.0
     for node in self.nodesList:
       if node["key"][0] == "L":
@@ -102,47 +101,8 @@ class ADTAnalysis:
         node["preDefenseProbability"] = node["preDefenseProbability"] / sum
         node["postDefenseProbability"] = node["postDefenseProbability"] / sum
 
-  def analyzeTree(self):
-    for scenario in self.scenarios: #Go through scenarios sorted by highest risk
-      if scenario.probability <= self.acceptableRisk:
-          break
-      keys = list(scenario.attackDict.keys())
-      keys.sort(reverse=True, key=lambda x: scenario.attackDict.get(x).get("roi"))
-      prob = scenario.probability
-      for key in keys: #for attacks already defended by other runs across scenarios
-        if key in self.investedNodes:
-          prob = (prob / scenario.attackDict.get(key).get("prob")) * scenario.attackDict.get(key).get("dProb")
-          keys.remove(key)
-      #acceptable = (scenario.probability * self.impact) > self.acceptableRisk
-      for key in keys: #Go through attacks in scenario by highest return on investment
-        if prob <= self.acceptableRisk: #prob * self.impact???
-          break
-        attack = scenario.attackDict.get(key)
-        if attack.get("cost") <= self.budgetLeft:
-          self.investedNodes.append(key)
-          prob = (prob / attack.get("prob")) * attack.get("dProb")
-          self.budgetLeft -= attack.get("cost")
-    #attackRoot = self.findAttackRoot(self.treeRoot)
-
-    #Go through scenarios in case an attack was defended in a scenario after it had been processed above. 
-    # in other words recalculate probability for every scenario
-    for scenario in self.scenarios:       
-      keys = scenario.attackDict.keys()
-      firstRun = True
-      recalcProb = 0
-      for key in keys: #for attacks already defended by other runs across scenarios
-        if firstRun:
-          if key in self.investedNodes:
-            recalcProb = scenario.attackDict.get(key).get("dProb")
-          else:
-            recalcProb = scenario.attackDict.get(key).get("prob")
-          firstRun = False
-        else:
-          if key in self.investedNodes:
-            recalcProb = recalcProb * scenario.attackDict.get(key).get("dProb")
-          else:
-            recalcProb = recalcProb * scenario.attackDict.get(key).get("prob")
-      scenario.postdProbability = recalcProb
+  def normalizeRisk(self):
+    #TODO: normalize risk
     return
 
   def findRoot(self):
@@ -205,6 +165,49 @@ class ADTAnalysis:
     else:
       print("Error:: Could not determine node type")
 
+  def analyzeTree(self):
+    for scenario in self.scenarios: #Go through scenarios sorted by highest risk
+      if scenario.probability <= self.acceptableRisk:
+          break
+      keys = list(scenario.attackDict.keys())
+      keys.sort(reverse=True, key=lambda x: scenario.attackDict.get(x).get("roi"))
+      prob = scenario.probability
+      for key in keys: #for attacks already defended by other runs across scenarios
+        if key in self.investedNodes:
+          prob = (prob / scenario.attackDict.get(key).get("prob")) * scenario.attackDict.get(key).get("dProb")
+          keys.remove(key)
+      #acceptable = (scenario.probability * self.impact) > self.acceptableRisk
+      for key in keys: #Go through attacks in scenario by highest return on investment
+        if prob <= self.acceptableRisk: #prob * self.impact???
+          break
+        attack = scenario.attackDict.get(key)
+        if attack.get("cost") <= self.budgetLeft:
+          self.investedNodes.append(key)
+          prob = (prob / attack.get("prob")) * attack.get("dProb")
+          self.budgetLeft -= attack.get("cost")
+    #attackRoot = self.findAttackRoot(self.treeRoot)
+
+    #Go through scenarios in case an attack was defended in a scenario after it had been processed above. 
+    # in other words recalculate probability for every scenario
+    for scenario in self.scenarios:       
+      keys = scenario.attackDict.keys()
+      firstRun = True
+      recalcProb = 0
+      for key in keys: #for attacks already defended by other runs across scenarios
+        if firstRun:
+          if key in self.investedNodes:
+            recalcProb = scenario.attackDict.get(key).get("dProb")
+          else:
+            recalcProb = scenario.attackDict.get(key).get("prob")
+          firstRun = False
+        else:
+          if key in self.investedNodes:
+            recalcProb = recalcProb * scenario.attackDict.get(key).get("dProb")
+          else:
+            recalcProb = recalcProb * scenario.attackDict.get(key).get("prob")
+      scenario.postdProbability = recalcProb
+    return
+
 def trimJson(jso):
   fluffStrs = ["text", "color", "shape", ]
   for node in jso["nodeData"]:
@@ -234,7 +237,7 @@ def backendRequest(frontendJson):
 #Example JSON insufficient for ADT rn
 jsonObj1 = """
 {
-    "acceptableRiskThreshold": 0.01,
+    "acceptableRiskThreshold": 50,
     "defenseBudget": 600,
     "nodeData": [{
         "key": "ROOT_NODE",
@@ -444,14 +447,14 @@ jsonObj1 = """
 
 jsonObj2 = """
 {
-    "acceptableRiskThreshold": 2,
+    "acceptableRiskThreshold": 50,
     "defenseBudget": 550,
     "nodeData": [{
         "key": "ROOT_NODE",
         "impact": 200
     }, {
         "key": "SAFE_PATH",
-        "probability": "0"
+        "probability": 1
     }, {
         "key": "OR"
     }, {
@@ -526,7 +529,7 @@ jsonObj2 = """
 """
 
 
-backendRequest(jsonObj1)
+backendRequest(jsonObj2)
 #jsonData = json.loads(jsonObj)
 #trimJson(jsonData)
 #print(json.dumps(jsonData))
