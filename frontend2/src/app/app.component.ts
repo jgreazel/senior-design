@@ -4,6 +4,7 @@ import { DiagramCanvasComponent } from './diagram-canvas/diagram-canvas.componen
 import * as _ from 'lodash';
 import { ApiService } from './api-handler/api.service';
 import { HttpClient } from '@angular/common/http';
+import { FileSaverService } from 'ngx-filesaver';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,7 @@ export class AppComponent implements AfterViewInit {
     private cdr: ChangeDetectorRef,
     private apiService: ApiService,
     private httpClient: HttpClient,
-    // private fileSaverService: FileSaverService
+    private fileSaverService: FileSaverService
   ) { }
 
   /**
@@ -138,22 +139,30 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
-  // onDown(type: string, fromRemote: boolean) {
-  //   const fileName = `save.${type}`;
-  //   if (fromRemote) {
-  //     this.httpClient.get(`assets/files/demo.${type}`, {
-  //       observe: 'response',
-  //       responseType: 'blob'
-  //     }).subscribe(res => {
-  //       this.fileSaverService.save(res.body, fileName);
-  //     });
-  //     return;
-  //   }
-  //   this.text = "";
-  //   this.text += "{\n\"nodes\": " + JSON.stringify(this.diagramNodeData) + ",\n";
-  //   this.text += "\"links\": " + JSON.stringify(this.diagramLinkData) + "\n}";
-  //   const fileType = this.fileSaverService.genType(fileName);
-  //   const txtBlob = new Blob([this.text], { type: fileType });
-  //   this.fileSaverService.save(txtBlob, fileName, null, this.options);
-  // }
+  /**
+   * Triggered when 'Save' button is clicked.
+   * Saves a json file of the diagram
+   */
+  onDown(type: string, fromRemote: boolean) {
+    let text: string;
+    const options = {
+      autoBom: false,
+    };
+    const fileName = `save.${type}`;
+    if (fromRemote) {
+      this.httpClient.get(`assets/files/demo.${type}`, {
+        observe: 'response',
+        responseType: 'blob'
+      }).subscribe(res => {
+        this.fileSaverService.save(res.body, fileName);
+      });
+      return;
+    }
+    text = "";
+    text += "{\n\"nodes\": " + JSON.stringify(this.diagramCanvasComponent.diagramNodeData) + ",\n";
+    text += "\"links\": " + JSON.stringify(this.diagramCanvasComponent.diagramLinkData) + "\n}";
+    const fileType = this.fileSaverService.genType(fileName);
+    const txtBlob = new Blob([text], { type: fileType });
+    this.fileSaverService.save(txtBlob, fileName, null, options);
+  }
 }

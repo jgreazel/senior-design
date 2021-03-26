@@ -10,15 +10,17 @@ import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
-// import { FileSaverModule } from 'ngx-filesaver';
+import { FileSaverModule } from 'ngx-filesaver';
 
 
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
 
 import { AtkTreePaletteComponent } from './atk-tree-palette/atk-tree-palette.component';
 import { AtkDefTreePaletteComponent } from './atk-def-tree-palette/atk-def-tree-palette.component';
@@ -45,13 +47,16 @@ registerLocaleData(en);
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    FileSaverModule,
     GojsAngularModule,
     NzGridModule,
     NzButtonModule,
+    NzIconModule,
     NzSelectModule,
     NzFormModule,
     NzInputModule,
-    NzInputNumberModule
+    NzInputNumberModule,
+    NzUploadModule
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]
