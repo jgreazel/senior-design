@@ -13,11 +13,11 @@
       </nz-option-group>
     </nz-select>
   </div>
-  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="analyzeData()">Analyze</button></div>
-  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="onDown('json', false)">Save</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="analyzeData()"><i nz-icon nzType="sync" nzTheme="outline"></i>Analyze</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="onDown('json', false)"><i nz-icon nzType="save" nzTheme="outline"></i>Save</button></div>
   <div nz-col>
     <nz-upload nzAccept=".json">
-      <button nz-button nzType="primary" nzShape="round">Upload</button>
+      <button nz-button nzType="primary" nzShape="round"><i nz-icon nzType="upload" nzTheme="outline"></i>Upload</button>
     </nz-upload>
   </div>
 </div>

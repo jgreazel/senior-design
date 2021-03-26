@@ -16,6 +16,8 @@ import { FileSaverModule } from 'ngx-filesaver';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { IconDefinition } from '@ant-design/icons-angular';
+import { SyncOutline, DeleteOutline, SaveOutline, UploadOutline } from '@ant-design/icons-angular/icons';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -30,6 +32,8 @@ import { AtkDefTreeFormComponent } from './atk-def-tree-form/atk-def-tree-form.c
 import { DiagramFormComponent } from './diagram-form/diagram-form.component';
 
 registerLocaleData(en);
+
+const icons: IconDefinition[] = [SyncOutline, DeleteOutline, SaveOutline, UploadOutline]
 
 @NgModule({
   declarations: [
@@ -51,7 +55,7 @@ registerLocaleData(en);
     GojsAngularModule,
     NzGridModule,
     NzButtonModule,
-    NzIconModule,
+    NzIconModule.forRoot(icons),
     NzSelectModule,
     NzFormModule,
     NzInputModule,
