@@ -1,3 +1,4 @@
+import { ViewChild } from '@angular/core';
 import { Component } from '@angular/core';
 import * as go from 'gojs';
 import { DataSyncService, DiagramComponent } from 'gojs-angular';
@@ -7,9 +8,11 @@ import { DataSyncService, DiagramComponent } from 'gojs-angular';
   templateUrl: './diagram-canvas.component.html',
   styleUrls: ['./diagram-canvas.component.css']
 })
-export class DiagramCanvasComponent extends DiagramComponent {
+export class DiagramCanvasComponent {
 
-  public initDiagram = () => {
+  @ViewChild('diagramDiv', { static: true }) public myDiagramComponent: DiagramComponent;
+
+  public initDiagram(){
 
     //create custom shape for and-gate
     go.Shape.defineFigureGenerator("AndGate", function (shape, w, h) {

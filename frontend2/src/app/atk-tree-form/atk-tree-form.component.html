@@ -1,8 +1,22 @@
-<form nz-form [formGroup]='validateForm' (ngSubmit)="submitForm()">
+<form *ngIf="_selectedNode" nz-form [formGroup]='validateForm' (ngSubmit)="submitForm()" nzLayout="vertical">
     <nz-form-item>
-        <nz-form-label>Probability: (1-10)</nz-form-label>
+        <nz-form-label nzSpan="24">Label:</nz-form-label>
+        <nz-form-control nzErrorTip="Label is required">
+            <input nz-input formControlName="label"/>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="selectedIsLeaf">
+        <nz-form-label nzSpan="24">Probability: (1-10)</nz-form-label>
         <nz-form-control nzErrorTip="Probability is required">
-            <nz-input-number formControlName="probability"></nz-input-number>
+            <nz-input-number nzMin="0" nzMax="10" formControlName="probability"></nz-input-number>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="!selectedIsLeaf">
+        <nz-form-label nzSpan="24">Impact to System: ($)</nz-form-label>
+        <nz-form-control nzErrorTip="Impact is required">
+            <nz-input-number nzMin="0" formControlName="impact"></nz-input-number>
         </nz-form-control>
     </nz-form-item>
 

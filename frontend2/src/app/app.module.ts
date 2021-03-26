@@ -22,6 +22,8 @@ import { AtkTreePaletteComponent } from './atk-tree-palette/atk-tree-palette.com
 import { AtkDefTreePaletteComponent } from './atk-def-tree-palette/atk-def-tree-palette.component';
 import { DiagramCanvasComponent } from './diagram-canvas/diagram-canvas.component';
 import { AtkTreeFormComponent } from './atk-tree-form/atk-tree-form.component';
+import { AtkDefTreeFormComponent } from './atk-def-tree-form/atk-def-tree-form.component';
+import { DiagramFormComponent } from './diagram-form/diagram-form.component';
 
 registerLocaleData(en);
 
@@ -31,7 +33,9 @@ registerLocaleData(en);
     AtkTreePaletteComponent,
     AtkDefTreePaletteComponent,
     DiagramCanvasComponent,
-    AtkTreeFormComponent
+    AtkTreeFormComponent,
+    AtkDefTreeFormComponent,
+    DiagramFormComponent
   ],
   imports: [
     BrowserModule,

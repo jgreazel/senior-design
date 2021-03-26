@@ -45,9 +45,9 @@ export class AtkTreePaletteComponent {
   public atkTreePalette = [
     { key: 'AND', color: 'red', shape: 'andgate' },
     { key: 'OR', color: 'green', shape: 'orgate' },
-    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: '0' },
-    { key: 'LEAF', text: 'placeholderText', probability: '0', color: 'blue', shape: 'square' },
-    { key: 'SAFE_PATH', text: 'Safe Path', probability: '0', color: 'lightblue', shape: 'square' }
+    { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: 0 },
+    { key: 'LEAF', text: 'placeholderText', probability: 0, color: 'blue', shape: 'square' },
+    { key: 'SAFE_PATH', text: 'Safe Path', probability: 0, color: 'lightblue', shape: 'square' }
   ];
 
   public paletteNodeData: Array<go.ObjectData> = this.atkTreePalette;
