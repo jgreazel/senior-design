@@ -1,6 +1,6 @@
 <form *ngIf="_selectedNode" nz-form [formGroup]='validateForm' (ngSubmit)="submitForm()" nzLayout="vertical">
     <!-- nodeKeys = ["S", "L", "R", "D"] -->
-    
+    <h3>Node Editor</h3>
     <nz-form-item>
         <nz-form-label nzSpan="24">Label:</nz-form-label>
         <nz-form-control nzErrorTip="Label is required">
