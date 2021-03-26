@@ -98,7 +98,7 @@ export class DiagramCanvasComponent {
     dia.nodeTemplate =
       $(go.Node, 'Auto',
         {
-          selectionAdorned: false,
+          selectionAdorned: true,
         },
         $(go.TextBlock, {
           font: '15px Courier'

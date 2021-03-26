@@ -13,15 +13,22 @@
       </nz-option-group>
     </nz-select>
   </div>
-  <div nz-col><button nz-button nzType="primary" nzShape="round">Analyze</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="analyzeData()">Analyze</button></div>
   <div nz-col><button nz-button nzType="primary" nzShape="round">Save</button></div>
   <div nz-col><button nz-button nzType="primary" nzShape="round">Upload</button></div>
 </div>
 
 <div nz-row [nzGutter]="[16, 16]">
   <div nz-col nzSpan="4">
-    <atk-tree-form *ngIf="selectedEngine==='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-tree-form>
-    <atk-def-tree-form *ngIf="selectedEngine!=='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-def-tree-form>
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col nzSpan="24">
+        <diagram-form [isDefense]="selectedEngine!=='attackTree'" (onFormChange)="handleGraphFormChange($event)"></diagram-form>
+      </div>
+      <div nz-col nzSpan="24">
+        <atk-tree-form *ngIf="selectedEngine==='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-tree-form>
+        <atk-def-tree-form *ngIf="selectedEngine!=='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-def-tree-form>    
+      </div>
+    </div>
   </div>
   <div nz-col nzSpan="16">
     <div nz-row [nzGutter]="[16, 16]">
