@@ -326,7 +326,15 @@ export class AppComponent {
     }
     this.text = "";
     this.text += "{\n\"nodes\": " + JSON.stringify(this.diagramNodeData) + ",\n";
-    this.text += "\"links\": " + JSON.stringify(this.diagramLinkData) + "\n}";
+    this.text += "\"links\": " + JSON.stringify(this.diagramLinkData) + "";
+    
+    if(this.selectedEngine !== 'Attack Tree'){
+      this.text += ",\n\"acceptRisk\": " + this.acceptableRiskThreshold + ",\n";
+      this.text += "\"budget\": " + this.defenseBudget + "\n}";
+    } else {
+      this.text += "\n}";
+    }
+    
     const fileType = this.fileSaverService.genType(fileName);
     const txtBlob = new Blob([this.text], { type: fileType });
     this.fileSaverService.save(txtBlob, fileName, null, this.options);
