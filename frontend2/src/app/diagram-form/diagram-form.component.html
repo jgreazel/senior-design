@@ -2,9 +2,9 @@
     <h3>Diagram Variables</h3>
 
     <nz-form-item>
-        <nz-form-label nzSpan="24">Acceptable Risk Threshold:</nz-form-label>
+        <nz-form-label nzSpan="24">Acceptable Risk Threshold: (%)</nz-form-label>
         <nz-form-control nzErrorTip="Threshold is required">
-            <nz-input-number nzMin="0" formControlName="acceptableRiskThreshold"></nz-input-number>
+            <nz-input-number nzMin="0" nzMax="100" formControlName="acceptableRiskThreshold"></nz-input-number>
         </nz-form-control>
     </nz-form-item>
 
