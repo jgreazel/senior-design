@@ -1,0 +1,51 @@
+<div nz-row nzGutter="12" nzJustify="end">
+  <div nz-col nzFlex="10">
+    <h1>CySec Game</h1>
+  </div>
+  <div nz-col>
+    <nz-select [(ngModel)]="selectedEngine">
+      <nz-option-group nzLabel="Attack Tree">
+        <nz-option nzValue="attackTree" nzLabel="Attack Tree"></nz-option>
+      </nz-option-group>
+      <nz-option-group nzLabel="Attack Defense Tree">
+        <nz-option nzValue="attackDefenseTree" nzLabel="Attack Defense Tree"></nz-option>
+        <nz-option nzValue="gameTheory" nzLabel="Game Theory"></nz-option>
+      </nz-option-group>
+    </nz-select>
+  </div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="analyzeData()"><i nz-icon nzType="sync" nzTheme="outline"></i>Analyze</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="onDown('json', false)"><i nz-icon nzType="save" nzTheme="outline"></i>Save</button></div>
+  <div nz-col>
+    <nz-upload nzAccept=".json">
+      <button nz-button nzType="primary" nzShape="round"><i nz-icon nzType="upload" nzTheme="outline"></i>Upload</button>
+    </nz-upload>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="[16, 16]">
+  <div nz-col nzSpan="4">
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col nzSpan="24">
+        <diagram-form [isDefense]="selectedEngine!=='attackTree'" (onFormChange)="handleGraphFormChange($event)"></diagram-form>
+      </div>
+      <div nz-col nzSpan="24">
+        <atk-tree-form *ngIf="selectedEngine==='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-tree-form>
+        <atk-def-tree-form *ngIf="selectedEngine!=='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-def-tree-form>    
+      </div>
+    </div>
+  </div>
+  <div nz-col nzSpan="16">
+    <div nz-row [nzGutter]="[16, 16]">
+      <div nz-col nzSpan="24">
+        <atk-tree-palette *ngIf="selectedEngine==='attackTree'"></atk-tree-palette>
+        <atk-def-tree-palette *ngIf="selectedEngine!=='attackTree'"></atk-def-tree-palette>
+      </div>
+      <div nz-col nzSpan="24">
+        <diagram-canvas></diagram-canvas>
+      </div>
+    </div>
+  </div>
+  <div nz-col nzSpan="4">
+
+  </div>
+</div>
