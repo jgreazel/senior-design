@@ -23,6 +23,8 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzListModule } from 'ng-zorro-antd/list';
 
 import { AtkTreePaletteComponent } from './atk-tree-palette/atk-tree-palette.component';
 import { AtkDefTreePaletteComponent } from './atk-def-tree-palette/atk-def-tree-palette.component';
@@ -30,6 +32,7 @@ import { DiagramCanvasComponent } from './diagram-canvas/diagram-canvas.componen
 import { AtkTreeFormComponent } from './atk-tree-form/atk-tree-form.component';
 import { AtkDefTreeFormComponent } from './atk-def-tree-form/atk-def-tree-form.component';
 import { DiagramFormComponent } from './diagram-form/diagram-form.component';
+import { DataVisualizationComponent } from './data-visualization/data-visualization.component';
 
 registerLocaleData(en);
 
@@ -43,7 +46,8 @@ const icons: IconDefinition[] = [SyncOutline, DeleteOutline, SaveOutline, Upload
     DiagramCanvasComponent,
     AtkTreeFormComponent,
     AtkDefTreeFormComponent,
-    DiagramFormComponent
+    DiagramFormComponent,
+    DataVisualizationComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +64,9 @@ const icons: IconDefinition[] = [SyncOutline, DeleteOutline, SaveOutline, Upload
     NzFormModule,
     NzInputModule,
     NzInputNumberModule,
-    NzUploadModule
+    NzUploadModule,
+    NzCollapseModule,
+    NzListModule
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]

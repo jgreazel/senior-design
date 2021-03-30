@@ -1,0 +1,21 @@
+{
+	"cost": 400,
+	"defendedAttacks": ["LEAF", "LEAF1", "LEAF2"],
+	"attackScenarios": [
+		{
+		"risk": 45,
+		"predefenseRisk": 45,
+		"attacks": ["LEAF", "LEAF1", "LEAF2"]
+		},
+		{
+		"risk": 45,
+		"predefenseRisk": 45,
+		"attacks": ["LEAF", "LEAF1", "LEAF2"]
+		},
+		{
+		"risk": 45,
+		"predefenseRisk": 45,
+		"attacks": ["LEAF", "LEAF1", "LEAF2"]
+		}
+	]
+}
