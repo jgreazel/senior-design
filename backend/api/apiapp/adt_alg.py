@@ -59,8 +59,8 @@ class ADTAnalysis:
     self.budget = jsonData["defenseBudget"]
     self.budgetLeft = self.budget
 
-    self.nodesList = jsonData["nodes"]
-    self.edgesList = jsonData["links"]
+    self.nodesList = jsonData["nodeData"]
+    self.edgesList = jsonData["edgeData"]
     self.investedNodes = list()
     
     self.normalizeTree()
@@ -124,10 +124,10 @@ class ADTAnalysis:
         sum += float(node["probability"])
     for node in self.nodesList:
       if node["key"][0] == "L":
-        node["preDefenseProbability"] = node["preDefenseProbability"] / sum
-        node["postDefenseProbability"] = node["postDefenseProbability"] / sum
+        node["preDefenseProbability"] = float(node["preDefenseProbability"]) / sum
+        node["postDefenseProbability"] = float(node["postDefenseProbability"]) / sum
       elif node["key"][0] == "S":
-        node["probability"] = node["probability"] / sum
+        node["probability"] = float(node["probability"]) / sum
 
   def findRoot(self):
     for n in self.nodesList:
@@ -161,6 +161,7 @@ class ADTAnalysis:
     return children
 
   def findScenarios(self, node):
+    print("node: ",node["key"])
     if node["key"][0] == "L":  # If leaf node
       singleList = self.findChildren(node)
       scenarioList = list(())
