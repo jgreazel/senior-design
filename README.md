@@ -14,6 +14,8 @@ CySec Game
 
 ### Installation
 `python3 -m pip install Django`
+`python3 -m pip install djangorestframework`
+`python3 -m pip install django-cors-headers`
 
 ### Run 
 `python3 manage.py runserver`
