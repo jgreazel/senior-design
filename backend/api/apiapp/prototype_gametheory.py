@@ -1,4 +1,4 @@
-import json
+import codecs, json
 import sys
 import nashpy as nash
 
@@ -74,7 +74,7 @@ class Scenario:
         return Scenario(prob, cost, keys)
 
 
-def normalize():
+def normalize(nodesList):
     """
     Normalizes probabilty of attacks in nodeList to sum to 1
     """
@@ -87,7 +87,7 @@ def normalize():
             node["probability"] = float(node["probability"]) / sum
 
 
-def findRoot():
+def findRoot(nodesList):
     """Find root node."""
     root = None
     for n in nodesList:
@@ -105,9 +105,9 @@ def findRoot():
     return root
 
 
-def findAttackRoot():
+def findAttackRoot(nodesList):
     """Find root node of attack tree (that does not include safe path node)."""
-    root = findRoot()
+    root = findRoot(nodesList)
     children = findChildren(root)
     for node in children:
         if node["key"][0] != "L":
@@ -416,19 +416,42 @@ jsonTest = """
 "links": [{"from":"AND","to":"LEAF","fromPort":"b","toPort":"t","key":-3},{"from":"AND","to":"LEAF2","fromPort":"b","toPort":"t","key":-4},{"from":"AND2","to":"LEAF3","fromPort":"b","toPort":"t","key":-5},{"from":"AND2","to":"LEAF4","fromPort":"b","toPort":"t","key":-6},{"from":"OR","to":"AND","fromPort":"b","toPort":"t","key":-7},{"from":"OR","to":"AND2","fromPort":"b","toPort":"t","key":-8},{"from":"ROOT_NODE","to":"OR","fromPort":"b","toPort":"t","key":-9},{"from":"ROOT_NODE","to":"SAFE_PATH","fromPort":"b","toPort":"t","key":-10},{"from":"LEAF3","to":"DEFENSE_NODE3","fromPort":"b","toPort":"t","key":-12},{"from":"LEAF4","to":"DEFENSE_NODE4","fromPort":"b","toPort":"t","key":-11},{"from":"LEAF2","to":"DEFENSE_NODE2","fromPort":"b","toPort":"t","key":-13},{"from":"LEAF","to":"DEFENSE_NODE","fromPort":"b","toPort":"t","key":-14}]
 }
 """
-jsonData = json.loads(jsonTest)
+# jsonData = json.loads(jsonTest)
 
-nodesList = jsonData["nodes"]
-edgesList = jsonData["links"]
+# nodesList = jsonData["nodes"]
+# edgesList = jsonData["links"]
 
-normalize()
+# normalize()
 
-scenarios, defenses = findScenarios(findAttackRoot())
-print(*scenarios, sep="\n")
-print(*defenses, sep="\n")
+# scenarios, defenses = findScenarios(findAttackRoot())
+# print(*scenarios, sep="\n")
+# print(*defenses, sep="\n")
 
-attackCosts = [scenario.get_cost() for scenario in scenarios]
-costs = [scenario.get_cost() for scenario in defenses]
+# attackCosts = [scenario.get_cost() for scenario in scenarios]
+# costs = [scenario.get_cost() for scenario in defenses]
 
-eqs = nasheq(5, attackCosts, costs)
-print(list(eqs))
+# eqs = nasheq(5, attackCosts, costs)
+# print(list(eqs))
+
+def backendRequest(frontendJson):
+    jsonData = json.loads(frontendJson)
+
+    nodesList = jsonData["nodeData"]
+    edgesList = jsonData["edgeData"]
+
+    normalize(nodesList)
+
+    scenarios, defenses = findScenarios(findAttackRoot())
+    # print(*scenarios, sep="\n")
+    # print(*defenses, sep="\n")
+
+    attackCosts = [scenario.get_cost() for scenario in scenarios]
+    costs = [scenario.get_cost() for scenario in defenses]
+
+    eqs = nasheq(5, attackCosts, costs)
+
+    listEqs = list(eqs)
+    print(listEqs)
+    returnJson = json.dumps(listEqs)
+
+    return returnJson

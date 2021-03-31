@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from apiapp import prototype_alg 
 from apiapp import adt_alg
+from apiapp import prototype_gametheory
 import json
 
 # from rest_framework import s
@@ -59,4 +60,4 @@ class game_theory_api(APIView):
         test = request.data
         x = json.dumps(test)
         print(x)
-        return Response(prototype_alg.api_request(x))
+        return Response(prototype_gametheory.backendRequest(x))
