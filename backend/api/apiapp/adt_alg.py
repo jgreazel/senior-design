@@ -125,7 +125,11 @@ class ADTAnalysis:
     for node in self.nodesList:
       if node["key"][0] == "L":
         node["preDefenseProbability"] = float(node["preDefenseProbability"]) / sum
-        node["postDefenseProbability"] = float(node["postDefenseProbability"]) / sum
+        #added a try and except because I think I'm sending bad data
+        try:
+          node["postDefenseProbability"] = float(node["postDefenseProbability"]) / sum
+        except:
+          do_nothing = 0
       elif node["key"][0] == "S":
         node["probability"] = float(node["probability"]) / sum
 
@@ -161,46 +165,51 @@ class ADTAnalysis:
     return children
 
   def findScenarios(self, node):
-    print("node: ",node["key"])
-    if node["key"][0] == "L":  # If leaf node
-      singleList = self.findChildren(node)
-      scenarioList = list(())
-      scenarioList.append(ADTScenario(node["key"], node["preDefenseProbability"], node["postDefenseProbability"], singleList[0]["defenseCost"]))
-      return scenarioList
-    elif node["key"][0] == "O":  # If OR node
-      scenarioList = list(())
-      children = self.findChildren(node)
-      for child in children:
-        childScenarios = self.findScenarios(child)
-        for scenario in childScenarios:
-          scenarioList.append(scenario)
-      return scenarioList
-    elif node["key"][0] == "A":  # If AND node
-      scenarioList = list(())
-      tempList = list(())
-      childLists = list(())  # List of lists
-      children = self.findChildren(node)
-      for child in children:  # Create list of child scenario lists
-        childLists.append(self.findScenarios(child))
-        scenarioList = childLists[0]
-      for i in range(1, len(childLists)):  # Compare all combinations of scenarios
-        for scenario1 in scenarioList:
-          for scenario2 in childLists[i]:
-            tempList.append(scenario1.combine(scenario2))
-          scenarioList = tempList
-        tempList = list(())
-      return scenarioList
+    if(node == None):
+      print("Error: No node found")
     else:
-      print("Error:: Could not determine node type")
+      if node["key"][0] == "L":  # If leaf node
+        singleList = self.findChildren(node)
+        scenarioList = list(())
+        scenarioList.append(ADTScenario(node["key"], node["preDefenseProbability"], node["postDefenseProbability"], singleList[0]["defenseCost"]))
+        return scenarioList
+      elif node["key"][0] == "O":  # If OR node
+        scenarioList = list(())
+        children = self.findChildren(node)
+        for child in children:
+          childScenarios = self.findScenarios(child)
+          for scenario in childScenarios:
+            scenarioList.append(scenario)
+        return scenarioList
+      elif node["key"][0] == "A":  # If AND node
+        scenarioList = list(())
+        tempList = list(())
+        childLists = list(())  # List of lists
+        children = self.findChildren(node)
+        for child in children:  # Create list of child scenario lists
+          childLists.append(self.findScenarios(child))
+          scenarioList = childLists[0]
+        for i in range(1, len(childLists)):  # Compare all combinations of scenarios
+          for scenario1 in scenarioList:
+            for scenario2 in childLists[i]:
+              tempList.append(scenario1.combine(scenario2))
+            scenarioList = tempList
+          tempList = list(())
+        return scenarioList
+      else:
+        print("Error:: Could not determine node type")
 
   def findRisk(self):
-    sum = self.safePathProb
-    for scenario in self.scenarios:
-      sum += scenario.probability
-    for scenario in self.scenarios:
-      scenario.riskPercentage = scenario.probability / sum
-      scenario.postdRiskPercentage = scenario.probability / sum
-    #self.sumRiskValue = sum
+    if(self.scenarios == None):
+      print("Error: No scenarios found")
+    else:
+      sum = self.safePathProb
+      for scenario in self.scenarios:
+        sum += scenario.probability
+      for scenario in self.scenarios:
+        scenario.riskPercentage = scenario.probability / sum
+        scenario.postdRiskPercentage = scenario.probability / sum
+      #self.sumRiskValue = sum
 
   def recalculateRisk(self):
     sum = self.safePathProb
