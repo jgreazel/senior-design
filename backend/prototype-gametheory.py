@@ -39,18 +39,13 @@ class Scenario:
 
     def __str__(self):
         """Returns nodes in scenario"""
-        # TODO: Check output with deeper tree
-        # risk = str(round(self.cost * self.probability, 3))
         prob = str(round(self.probability, 4))
         cost = str(round(self.cost, 2))
-        weighted_cost = str(round(self.get_cost(), 4))
         output = (
             "prob: "
             + prob
             + "  \tcost: "
             + cost
-            + "\tweighted cost: "
-            + weighted_cost
             + "\t: "
         )
         for key in self.nodeKeys:
@@ -58,8 +53,7 @@ class Scenario:
         return output
 
     def get_cost(self):
-        cost = self.cost * self.probability
-        return cost
+        return self.cost
 
     def combine(self, scenario2):
         """
@@ -71,7 +65,7 @@ class Scenario:
             The scenario to combine
         """
         prob = self.probability * scenario2.probability
-        cost = self.cost + scenario2.cost
+        cost = self.probability * self.cost + scenario2.probability * scenario2.cost
         keys = list(())
         for key in self.nodeKeys:
             keys.append(key)
@@ -87,10 +81,10 @@ def normalize():
     sum = 0.0
     for node in nodesList:
         if node["key"][0] == "L":
-            sum += float(node["riskIndex"])
+            sum += float(node["probability"])
     for node in nodesList:
         if node["key"][0] == "L":
-            node["riskIndex"] = float(node["riskIndex"]) / sum
+            node["probability"] = float(node["probability"]) / sum
 
 
 def findRoot():
@@ -165,12 +159,12 @@ def findScenarios(node):
     if node["key"][0] == "L":  # If leaf node
         scenarioList = list(())
         defenseList = list(())
-        scenarioList.append(Scenario(node["riskIndex"], node["cost"], [node["key"]]))
+        scenarioList.append(Scenario(node["probability"], node["cost"], [node["key"]]))
         defense = findChildren(node)
         if len(defense) > 0:
             defenseList.append(
                 Scenario(
-                    defense[0]["riskIndex"], defense[0]["cost"], [defense[0]["key"]]
+                    1, defense[0]["cost"], [defense[0]["key"]]
                 )
             )
         return scenarioList, defenseList
@@ -415,10 +409,17 @@ jsonObj = """
     ]
 }
 """
-jsonData = json.loads(jsonObj)
 
-nodesList = jsonData["nodeData"]
-edgesList = jsonData["edgeData"]
+jsonTest = """
+{
+"nodes": [{"key":"AND","color":"red","shape":"andgate"},{"key":"AND2","color":"red","shape":"andgate"},{"key":"LEAF","text":"LEAF1","probability":0.4,"cost":3},{"key":"LEAF2","text":"LEAF2","probability":0.2,"cost":10},{"key":"LEAF3","text":"LEAF3","probability":0.3,"cost":2},{"key":"LEAF4","text":"LEAF4","probability":0.1,"cost":5},{"key":"OR","color":"green","shape":"orgate"},{"key":"ROOT_NODE","text":"Root Node","color":"purple","shape":"orgate","impact":"0"},{"key":"SAFE_PATH","text":"Safe Path","cost":"0","probability":"0","color":"lightblue","shape":"square"},{"key":"DEFENSE_NODE","text":"Defense1","cost":1},{"key":"DEFENSE_NODE2","text":"Defense2","cost":2},{"key":"DEFENSE_NODE3","text":"Defense3","cost":2},{"key":"DEFENSE_NODE4","text":"Defense4","cost":6}],
+"links": [{"from":"AND","to":"LEAF","fromPort":"b","toPort":"t","key":-3},{"from":"AND","to":"LEAF2","fromPort":"b","toPort":"t","key":-4},{"from":"AND2","to":"LEAF3","fromPort":"b","toPort":"t","key":-5},{"from":"AND2","to":"LEAF4","fromPort":"b","toPort":"t","key":-6},{"from":"OR","to":"AND","fromPort":"b","toPort":"t","key":-7},{"from":"OR","to":"AND2","fromPort":"b","toPort":"t","key":-8},{"from":"ROOT_NODE","to":"OR","fromPort":"b","toPort":"t","key":-9},{"from":"ROOT_NODE","to":"SAFE_PATH","fromPort":"b","toPort":"t","key":-10},{"from":"LEAF3","to":"DEFENSE_NODE3","fromPort":"b","toPort":"t","key":-12},{"from":"LEAF4","to":"DEFENSE_NODE4","fromPort":"b","toPort":"t","key":-11},{"from":"LEAF2","to":"DEFENSE_NODE2","fromPort":"b","toPort":"t","key":-13},{"from":"LEAF","to":"DEFENSE_NODE","fromPort":"b","toPort":"t","key":-14}]
+}
+"""
+jsonData = json.loads(jsonTest)
+
+nodesList = jsonData["nodes"]
+edgesList = jsonData["links"]
 
 normalize()
 
@@ -427,7 +428,7 @@ print(*scenarios, sep="\n")
 print(*defenses, sep="\n")
 
 attackCosts = [scenario.get_cost() for scenario in scenarios]
-defenseCosts = [scenario.get_cost() for scenario in defenses]
+costs = [scenario.get_cost() for scenario in defenses]
 
-eqs = nasheq(10, attackCosts, defenseCosts)
+eqs = nasheq(5, attackCosts, costs)
 print(list(eqs))
