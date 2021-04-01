@@ -43,7 +43,7 @@ class Scenario:
             output += key + " "
         return output
 
-    def toDict(self):
+    def toDict(self,treeRoot):
         """Returns dictionary representation of scenario"""
         risk = round(float(treeRoot["impact"]) * self.probability, 4)
         prob = round(self.probability, 4)
@@ -113,7 +113,7 @@ def findAttackRoot(root,edgesList,nodesList):
     """
     children = findChildren(root,edgesList,nodesList)
     for node in children:
-      if node["key"][0] != "L":
+      if node["key"][0] != "S":
         return node
     print("Error:: Cannot find attack root node")
     return root
@@ -344,7 +344,7 @@ def api_request(frontend_json):
     scenList = []
     if(scenarios != None):
       for scen in scenarios:
-          scenList.append(scen.toDict())
+          scenList.append(scen.toDict(treeRoot))
 
     sendToFrontendJson = json.dumps(scenList)
     return sendToFrontendJson
