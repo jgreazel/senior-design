@@ -72,6 +72,9 @@ class Scenario:
         for key in scenario2.nodeKeys:
             keys.append(key)
         return Scenario(prob, cost, keys)
+    
+    def get_scenario(self):
+        return {"cost": self.cost, "probability": self.probability, "nodes": self.nodeKeys}
 
 
 def normalize(nodesList):
@@ -87,7 +90,7 @@ def normalize(nodesList):
             node["probability"] = float(node["probability"]) / sum
 
 
-def findRoot(nodesList):
+def findRoot(nodesList, edgesList):
     """Find root node."""
     root = None
     for n in nodesList:
@@ -105,18 +108,18 @@ def findRoot(nodesList):
     return root
 
 
-def findAttackRoot(nodesList):
+def findAttackRoot(nodesList, edgesList):
     """Find root node of attack tree (that does not include safe path node)."""
-    root = findRoot(nodesList)
-    children = findChildren(root)
+    root = findRoot(nodesList, edgesList)
+    children = findChildren(nodesList, edgesList, root)
     for node in children:
-        if node["key"][0] != "L":
+        if node["key"][0] != "S":
             return node
     print("Error:: Cannot find attack root node")
     return root
 
 
-def findNode(key):
+def findNode(nodesList, key):
     """
     Finds the node with the given key.
 
@@ -131,7 +134,7 @@ def findNode(key):
     print("Error:: Could not find node with given key")
 
 
-def findChildren(node):
+def findChildren(nodesList, edgesList, node):
     """
     Searches edge list to find all children of given node.
 
@@ -143,11 +146,11 @@ def findChildren(node):
     children = list(())
     for e in edgesList:
         if e["from"] == node["key"]:
-            children.append(findNode(e["to"]))
+            children.append(findNode(nodesList, e["to"]))
     return children
 
 
-def findScenarios(node):
+def findScenarios(nodesList, edgesList, node):
     """
     Recursive function for finding all scenarios from a given node.
 
@@ -160,7 +163,7 @@ def findScenarios(node):
         scenarioList = list(())
         defenseList = list(())
         scenarioList.append(Scenario(node["probability"], node["cost"], [node["key"]]))
-        defense = findChildren(node)
+        defense = findChildren(nodesList, edgesList, node)
         if len(defense) > 0:
             defenseList.append(
                 Scenario(
@@ -175,9 +178,9 @@ def findScenarios(node):
         tempList = list(())
         childDefenseLists = list(())
 
-        children = findChildren(node)
+        children = findChildren(nodesList, edgesList, node)
         for child in children:
-            childScenarios, childDefenses = findScenarios(child)
+            childScenarios, childDefenses = findScenarios(nodesList, edgesList, child)
             childDefenseLists.append(childDefenses)
             for scenario in childScenarios:
                 scenarioList.append(scenario)
@@ -198,9 +201,9 @@ def findScenarios(node):
         tempList = list(())
         childLists = list(())  # List of lists
 
-        children = findChildren(node)
+        children = findChildren(nodesList, edgesList, node)
         for child in children:  # Create list of child scenario lists
-            childScenarios, childDefenses = findScenarios(child)
+            childScenarios, childDefenses = findScenarios(nodesList, edgesList, child)
             childLists.append(childScenarios)
             for defense in childDefenses:
                 defenseList.append(defense)
@@ -221,7 +224,7 @@ def nasheq(impact, attack_costs, defense_costs):
     Computes the nash equilibrium for the given impact, attack costs,
     and defense costs.
 
-    Returns an equilibria generator.
+    Returns an equilibria generator and the payoff matrix.
     """
     payoff_attacker = []
     for i in range(len(attack_costs)):
@@ -232,7 +235,7 @@ def nasheq(impact, attack_costs, defense_costs):
 
     game = nash.Game(payoff_attacker)
     eqs = game.support_enumeration(non_degenerate=False, tol=0)
-    return eqs
+    return eqs, payoff_attacker
 
 
 # Get object from JSON to List
@@ -441,17 +444,29 @@ def backendRequest(frontendJson):
 
     normalize(nodesList)
 
-    scenarios, defenses = findScenarios(findAttackRoot(nodesList))
-    # print(*scenarios, sep="\n")
-    # print(*defenses, sep="\n")
+    scenarios, defenses = findScenarios(nodesList, edgesList, findAttackRoot(nodesList, edgesList))
+
 
     attackCosts = [scenario.get_cost() for scenario in scenarios]
-    costs = [scenario.get_cost() for scenario in defenses]
+    defenseCosts = [defense.get_cost() for defense in defenses]
 
-    eqs = nasheq(5, attackCosts, costs)
+    eqs, payoff_matrix = nasheq(5, attackCosts, defenseCosts)
 
-    listEqs = list(eqs)
+    listEqs = []
+    for eq in eqs:
+        json_arr = []
+        for arr in eq:
+            json_arr.append(arr.tolist())
+        listEqs.append(json_arr)
     print(listEqs)
-    returnJson = json.dumps(listEqs)
+
+    return_object = {
+        "attackScenarios": [scenario.get_scenario() for scenario in scenarios],
+        "defenseScenarios": [defense.get_scenario() for defense in defenses],
+        "payoffMatrix": payoff_matrix,
+        "nashEquilibria": listEqs
+    }
+    returnJson = json.dumps(return_object)
+
 
     return returnJson
