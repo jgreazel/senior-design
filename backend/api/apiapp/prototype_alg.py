@@ -79,12 +79,13 @@ def normalize(nodesList):
     sum = 0.0
     for node in nodesList:
         if node["key"][0] == "L":
-            sum += float(node["riskIndex"])
+            sum += float(node["probability"])
     for node in nodesList:
-        node["riskIndex"] = float(node["riskIndex"]) / sum
+      if node["key"][0] == "L":
+        node["probability"] = float(node["probability"]) / sum
 
 
-def findRoot(nodesList):
+def findRoot(nodesList,edgesList):
     """Find root node."""
     root = None
     for n in nodesList:
@@ -101,7 +102,7 @@ def findRoot(nodesList):
         print("Error:: Cannot find root node")
     return root
 
-def findAttackRoot(root,edgesList):
+def findAttackRoot(root,edgesList,nodesList):
     """
     Find root node of attack tree (that does not include safe path node).
     
@@ -110,7 +111,7 @@ def findAttackRoot(root,edgesList):
         root : Node (list)
             Root of tree
     """
-    children = findChildren(root,edgesList)
+    children = findChildren(root,edgesList,nodesList)
     for node in children:
       if node["key"][0] != "L":
         return node
@@ -118,7 +119,7 @@ def findAttackRoot(root,edgesList):
     return root
 
 
-def findNode(key):
+def findNode(key,nodesList):
     """
     Finds the node with the given key.
     
@@ -133,7 +134,7 @@ def findNode(key):
     print("Error:: Could not find node with given key")
 
 
-def findChildren(node,edgesList):
+def findChildren(node,edgesList,nodesList):
     """
     Searches edge list to find all children of given node.
     
@@ -145,11 +146,11 @@ def findChildren(node,edgesList):
     children = list(())
     for e in edgesList:
         if e["from"] == node["key"]:
-            children.append(findNode(e["to"]))
+            children.append(findNode(e["to"],nodesList))
     return children
 
 
-def findScenarios(node,edgesList):
+def findScenarios(node,edgesList,nodesList):
     """
     Recusive function for finding all scenarios from a given node.
     
@@ -160,13 +161,13 @@ def findScenarios(node,edgesList):
     """
     if node["key"][0] == "L":  # If leaf node
         scenarioList = list(())
-        scenarioList.append(Scenario(node["riskIndex"], [node["key"]]))
+        scenarioList.append(Scenario(node["probability"], [node["key"]]))
         return scenarioList
     elif node["key"][0] == "O":  # If OR node
         scenarioList = list(())
-        children = findChildren(node,edgesList)
+        children = findChildren(node,edgesList,nodesList)
         for child in children:
-            childScenarios = findScenarios(child,edgesList)
+            childScenarios = findScenarios(child,edgesList,nodesList)
             for scenario in childScenarios:
                 scenarioList.append(scenario)
         return scenarioList
@@ -174,9 +175,9 @@ def findScenarios(node,edgesList):
         scenarioList = list(())
         tempList = list(())
         childLists = list(())  # List of lists
-        children = findChildren(node,edgesList)
+        children = findChildren(node,edgesList,nodesList)
         for child in children:  # Create list of child scenario lists
-            childLists.append(findScenarios(child,edgesList))
+            childLists.append(findScenarios(child,edgesList,nodesList))
         scenarioList = childLists[0]
         for i in range(1, len(childLists)):  # Compare all combinations of scenarios
             for scenario1 in scenarioList:
@@ -335,14 +336,15 @@ def api_request(frontend_json):
 
     normalize(nodesList)
 
-    treeRoot = findRoot(nodesList)
-    attackRoot = findAttackRoot(treeRoot,edgesList)
+    treeRoot = findRoot(nodesList,edgesList)
+    attackRoot = findAttackRoot(treeRoot,edgesList,nodesList)
 
-    scenarios = findScenarios(attackRoot,edgesList)
+    scenarios = findScenarios(attackRoot,edgesList,nodesList)
 
     scenList = []
-    for scen in scenarios:
-        scenList.append(scen.toDict())
+    if(scenarios != None):
+      for scen in scenarios:
+          scenList.append(scen.toDict())
 
     sendToFrontendJson = json.dumps(scenList)
     return sendToFrontendJson
