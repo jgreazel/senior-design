@@ -12,7 +12,6 @@ export class GameTheoryFormComponent {
   constructor(private fb: FormBuilder) { }
 
   _selectedNode: go.Node;
-  selectedIsLeaf: boolean;
   validateForm!: FormGroup;
 
   probability: number;
@@ -20,7 +19,7 @@ export class GameTheoryFormComponent {
   impact: number;
   cost: number;
 
-  nodeKeys = ["S", "L", "R"];
+  nodeKeys = ["S", "L", "R", "D"];
 
   @Input()
   get selectedNode() {
@@ -29,7 +28,6 @@ export class GameTheoryFormComponent {
   set selectedNode(node: go.Node) {
     if (node && (this.nodeKeys.includes(node.key[0]))) {
       this._selectedNode = node;
-      this.selectedIsLeaf = (node.key[0] !== "R");
       this.probability = this._selectedNode.data.probability;
       this.label = this._selectedNode.data.text;
       this.impact = this._selectedNode.data.impact;
@@ -55,22 +53,44 @@ export class GameTheoryFormComponent {
     });
   }
 
+  getData =(nodeType: string)=>{
+    if(nodeType === "L"){
+      return {
+        ...this.selectedNode.data,
+        probability: this.validateForm.controls.probability.value,
+        cost: this.validateForm.controls.cost.value,
+        text: this.validateForm.controls.label.value
+      }
+    }
+    if(nodeType === "R"){
+      return {
+        ...this.selectedNode.data,
+        impact: this.validateForm.controls.impact.value,
+        text: this.validateForm.controls.label.value
+      }
+    }
+    if(nodeType === "D"){
+      return {
+        ...this.selectedNode.data,
+        cost: this.validateForm.controls.cost.value,
+        text: this.validateForm.controls.label.value
+      }
+    }
+    if(nodeType === "S"){
+      return {
+        ...this.selectedNode.data,
+        probability: this.validateForm.controls.probability.value,
+        text: this.validateForm.controls.label.value
+      }
+    }
+  }
+
   submitForm(): void {
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
-    const data = this.selectedIsLeaf ? {
-        ...this.selectedNode.data,
-        probability: this.validateForm.controls.probability.value,
-        cost: this.validateForm.controls.cost.value,
-        text: this.validateForm.controls.label.value
-      } :
-      {
-        ...this.selectedNode.data,
-        impact: this.validateForm.controls.impact.value,
-        text: this.validateForm.controls.label.value
-      };
+    const data = this.getData(this.selectedNode.key[0])
     console.log(data)
     this.onFormChange.emit(data)
   }
