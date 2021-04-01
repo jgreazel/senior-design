@@ -30,7 +30,8 @@
       </div>
       <div nz-col nzSpan="24">
         <atk-tree-form *ngIf="selectedEngine==='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-tree-form>
-        <atk-def-tree-form *ngIf="selectedEngine!=='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-def-tree-form>    
+        <atk-def-tree-form *ngIf="selectedEngine==='attackDefenseTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-def-tree-form>    
+        <game-theory-form *ngIf="selectedEngine==='gameTheory'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></game-theory-form>    
       </div>
     </div>
   </div>

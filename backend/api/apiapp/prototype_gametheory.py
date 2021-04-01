@@ -9,7 +9,7 @@ class Scenario:
 
     Attributes
     ----------
-    probabilty : float
+    probability : float
         probability of scenario occurring, 0-1
     nodeKeys : [str]
         list of node keys, each key represented by a string
@@ -26,9 +26,9 @@ class Scenario:
 
         Parameters
         ----------
-        probability : float?
+        probability : float
             The scenario's probability of occurring
-        cost : float?
+        cost : float
             The scenario's cost
         nodeKeys : [str]
             The list of nodes in the scenario
@@ -76,7 +76,7 @@ class Scenario:
 
 def normalize(nodesList):
     """
-    Normalizes probabilty of attacks in nodeList to sum to 1
+    Normalizes probability of attacks in nodeList to sum to 1
     """
     sum = 0.0
     for node in nodesList:
@@ -441,7 +441,7 @@ def backendRequest(frontendJson):
 
     normalize(nodesList)
 
-    scenarios, defenses = findScenarios(findAttackRoot())
+    scenarios, defenses = findScenarios(findAttackRoot(nodesList))
     # print(*scenarios, sep="\n")
     # print(*defenses, sep="\n")
 
