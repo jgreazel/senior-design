@@ -33,6 +33,7 @@ import { AtkTreeFormComponent } from './atk-tree-form/atk-tree-form.component';
 import { AtkDefTreeFormComponent } from './atk-def-tree-form/atk-def-tree-form.component';
 import { DiagramFormComponent } from './diagram-form/diagram-form.component';
 import { DataVisualizationComponent } from './data-visualization/data-visualization.component';
+import { GameTheoryFormComponent } from './game-theory-form/game-theory-form.component';
 
 registerLocaleData(en);
 
@@ -47,7 +48,8 @@ const icons: IconDefinition[] = [SyncOutline, DeleteOutline, SaveOutline, Upload
     AtkTreeFormComponent,
     AtkDefTreeFormComponent,
     DiagramFormComponent,
-    DataVisualizationComponent
+    DataVisualizationComponent,
+    GameTheoryFormComponent
   ],
   imports: [
     BrowserModule,
