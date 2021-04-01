@@ -6,15 +6,18 @@ import * as go from 'gojs';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
 
-  baseURL: string = "http://127.0.0.1:8000/api/hello-view/";
+  // baseURL: string = "http://127.0.0.1:8000/api/hello-view/";
+  attackURL :string = "http://127.0.0.1:8000/api/attack/";
+  attackDefenseURL :string = "http://127.0.0.1:8000/api/attack-defense/";
+  gameTheoryURL :string = "http://127.0.0.1:8000/api/game-theory/";
 
   constructor(private http: HttpClient) {
   }
 
   // example of a get request
   getNodeData(): Observable<Array<go.ObjectData>> {
-    console.log('get sample nodes ' + this.baseURL)
-    return this.http.get<Array<go.ObjectData>>(this.baseURL)
+    console.log('get sample nodes ' + this.attackURL)
+    return this.http.get<Array<go.ObjectData>>(this.attackURL)
   }
 
   // example of a post request
@@ -23,9 +26,23 @@ export class ApiService {
     const body = selectedEngine == 'Attack Tree' ? { 'selectedEngine': selectedEngine, 'acceptableRiskThreshold': acceptableRiskThreshold, 'nodeData': nodeData, 'edgeData': edgeData } :
     { 'selectedEngine': selectedEngine, 'acceptableRiskThreshold': acceptableRiskThreshold, 'defenseBudget': defenseBudget, 'nodeData': nodeData, 'edgeData': edgeData };
     console.log(JSON.stringify(body))
-    return (
-      this.http.post(this.baseURL,
-        JSON.stringify(body), { 'headers': headers })
-    )
+    if(selectedEngine == 'attackTree'){
+      return (
+        this.http.post(this.attackURL,
+          JSON.stringify(body), { 'headers': headers })
+      )
+      }
+      if(selectedEngine == 'attackDefenseTree'){
+        return (
+          this.http.post(this.attackDefenseURL,
+            JSON.stringify(body), { 'headers': headers })
+        )
+        }
+      else{
+        return (
+          this.http.post(this.gameTheoryURL,
+            JSON.stringify(body), { 'headers': headers })
+        )
+      }
   }
 }
