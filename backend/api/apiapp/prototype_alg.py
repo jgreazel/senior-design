@@ -78,7 +78,7 @@ def normalize(nodesList):
     """
     sum = 0.0
     for node in nodesList:
-        if node["key"][0] == "L":
+        if node["key"][0] == "L" or node["key"][0] == "S":
             sum += float(node["probability"])
     for node in nodesList:
       if node["key"][0] == "L":
