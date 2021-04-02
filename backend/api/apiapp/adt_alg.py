@@ -9,7 +9,7 @@ class ADTScenario:
     self.postdProbability = float(probability)
     self.riskPercentage = -1
     self.postdRiskPercentage = -1
-    roi = (defendedProbability - probability) / cost
+    roi = (probability - defendedProbability) / cost
     self.attackDict = {}
     self.attackDict[attackKey] = {
       "prob" : probability, 
