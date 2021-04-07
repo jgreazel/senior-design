@@ -178,7 +178,7 @@ export class AppComponent implements AfterViewInit {
     let links = this.diagramCanvasComponent.diagramLinkData;
     let nodeCount = 0, linkCount = 0, safeCount = 0, defenseCount = 0, leafCount = 0, rootCount = 0;;
     let alertString = "";
-    let safePathFound = false;
+    let safePathFound = false, safePathFromRoot = true, defenseFromLeaf = true;
     for (let i = 0; i < nodes.length; i++) {
       nodeCount++;
       if (nodes[i].key.includes("SAFE")) {
@@ -199,7 +199,12 @@ export class AppComponent implements AfterViewInit {
       linkCount++;
 
       if (links[i].to.includes("SAFE") && !links[i].from.includes("ROOT")) {
-        alertString += "Safe path must be the child of the ROOT node.\n";
+        safePathFromRoot = false;
+      }
+
+      //to defense and not from leaf
+      if(links[i].to.includes("DEFENSE") && !links[i].from.includes("LEAF")) {
+        defenseFromLeaf = false;
       }
     }
 
@@ -222,6 +227,14 @@ export class AppComponent implements AfterViewInit {
 
     if(rootCount > 1) {
       alertString += "Tree may only include one root node.\n";
+    }
+
+    if(safePathFromRoot == false) {
+      alertString += "Safe path must be the child of the ROOT node.\n";
+    }
+
+    if (defenseFromLeaf == false) {
+      alertString += "Defense node must stem from a leaf node.\n";
     }
 
     if(alertString === "") {
