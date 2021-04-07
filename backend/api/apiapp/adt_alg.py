@@ -66,7 +66,7 @@ class ADTAnalysis:
     self.normalizeTree()
     treeRoot = self.findRoot()
     self.safePathProb = 0 #Is set in findAttackRoot()
-    #self.sumRiskValue = 0
+    self.sumRiskValue = 0
     attackRoot = self.findAttackRoot(treeRoot)
 
     self.impact = float(treeRoot["impact"])
@@ -107,10 +107,16 @@ class ADTAnalysis:
       "attackScenarios" : []
     }
     for scenario in self.scenarios:
+      keys = list(scenario.attackDict.keys())
+      keyTextPairs = []
+      for key in keys:
+        for node in self.nodesList:
+          if node["key"] == key:
+            keyTextPairs.append([key, node["text"]])
       scendit = {
         "risk" : scenario.postdRiskPercentage,
         "preDefenseRisk" : scenario.riskPercentage,
-        "attacks" : list(scenario.attackDict.keys())
+        "attacks" : keyTextPairs
       }
       dit["attackScenarios"].append(scendit)
     return dit
@@ -209,14 +215,12 @@ class ADTAnalysis:
       for scenario in self.scenarios:
         scenario.riskPercentage = scenario.probability / sum
         scenario.postdRiskPercentage = scenario.probability / sum
-      #self.sumRiskValue = sum
+      self.sumRiskValue = sum
 
   def recalculateRisk(self):
     sum = self.safePathProb
-    self.investedNodes
-    print("WOW")
     for scenario in self.scenarios:
-      currentProb = 0
+      #currentProb = 0
       keys = list(scenario.attackDict.keys())
       firstRun = True
       for key in keys:
@@ -231,10 +235,11 @@ class ADTAnalysis:
             currentProb *= scenario.attackDict.get(key).get("dProb")
           else:
             currentProb *= scenario.attackDict.get(key).get("prob")
-      sum += currentProb
+      #sum += currentProb
       scenario.postdProbability = currentProb
     for scenario in self.scenarios:
-      scenario.postdRiskPercentage = scenario.postdProbability / sum
+      #scenario.postdRiskPercentage = scenario.postdProbability / sum
+      scenario.postdRiskPercentage = scenario.postdProbability / self.sumRiskValue
 
   def analyzeTree(self):
     for scenario in self.scenarios: #Go through scenarios sorted by highest risk
@@ -254,7 +259,7 @@ class ADTAnalysis:
 
 
 def trimJson(jso):
-  fluffStrs = ["text", "color", "shape", ]
+  fluffStrs = ["color", "shape"]
   for node in jso["nodeData"]:
     keys = list(node.keys())
     for key in keys:
