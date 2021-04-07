@@ -101,41 +101,147 @@ export class AppComponent implements AfterViewInit {
   }
 
   /**
-  * Returns 
-  *  true if data has been successfully validated
-  *  false if there is an error in the data
-  */
+   * 
+   * @returns true if tree was validated correctly, false otherwise. 
+   */
   validateData() {
     let nodes = this.diagramCanvasComponent.diagramNodeData;
     let links = this.diagramCanvasComponent.diagramLinkData;
-    let safePathSum: number = 0;
-    let alertString: string = ""
+    if(this.selectedEngine === 'attackTree'){
+      return this.validateAT();
+    } else {
+      return this.validateADT();
+    }
+  }
+
+  /**
+   * Validate properties of an Attack Tree
+   * @returns 
+   */
+  validateAT() {
+    let nodes = this.diagramCanvasComponent.diagramNodeData;
+    let links = this.diagramCanvasComponent.diagramLinkData;
+    let nodeCount = 0, linkCount = 0, safeCount = 0, rootCount = 0;
+    let alertString = "";
+    let safePathFound = false;
     for (let i = 0; i < nodes.length; i++) {
-      // if safe path node, add to count
+      nodeCount++;
       if (nodes[i].key.includes("SAFE")) {
-        safePathSum += 1;
-        if (safePathSum > 1) { // If there'smore than one safe path
-          alertString += "Only one safe path is allowed.\n";
-          break;
-        }
+        safeCount++;
+        safePathFound = true;
+      }
+      if (nodes[i].key.includes("ROOT")) {
+        rootCount++;
+      }
+      if (nodes[i].key.includes("DEFENSE")) {
+        alertString += "Attack tree cannot contain defense nodes.\n";
       }
     }
     for (let i = 0; i < links.length; i++) {
-      // if link to safe node and not from an or node
+      linkCount++;
       if (links[i].to.includes("SAFE") && !links[i].from.includes("ROOT")) {
         alertString += "Safe path must be the child of the ROOT node.\n";
-        break;
       }
     }
-    // there should always be one more node than links
-    if ((nodes.length - 1) != links.length) {
-      alertString += "A tree property has been violated.\n"
+
+    //Nodes should equal edges + 1
+    if(linkCount != nodeCount-1) {
+      alertString += "Not a valid tree.\n";
     }
-    if (alertString !== "") {
+
+    if(safePathFound == false) {
+      alertString += "Must include a safe path.\n";
+    }
+
+    if(safeCount > 1) {
+      alertString += "The tree must contain only one safe path.\n";
+    }
+
+    if(rootCount > 1) {
+      alertString += "Tree may only include one root node.\n";
+    }
+
+    if(alertString === "") {
+      return true;
+    } else {
       alert(alertString);
       return false;
-    } else {
+    }
+  }
+
+  /**
+   * Vaildate properties of Attack Defense Tree and Game Theory Tree
+   * @returns true if validated, false if not
+   */
+  validateADT(){
+    let nodes = this.diagramCanvasComponent.diagramNodeData;
+    let links = this.diagramCanvasComponent.diagramLinkData;
+    let nodeCount = 0, linkCount = 0, safeCount = 0, defenseCount = 0, leafCount = 0, rootCount = 0;;
+    let alertString = "";
+    let safePathFound = false, safePathFromRoot = true, defenseFromLeaf = true;
+    for (let i = 0; i < nodes.length; i++) {
+      nodeCount++;
+      if (nodes[i].key.includes("SAFE")) {
+        safeCount++;
+        safePathFound = true;
+      }
+      if (nodes[i].key.includes("LEAF")) {
+        leafCount++;
+      }
+      if (nodes[i].key.includes("DEFENSE")) {
+        defenseCount++;
+      }
+      if (nodes[i].key.includes("ROOT")) {
+        rootCount++;
+      }
+    }
+    for (let i = 0; i < links.length; i++) {
+      linkCount++;
+
+      if (links[i].to.includes("SAFE") && !links[i].from.includes("ROOT")) {
+        safePathFromRoot = false;
+      }
+
+      //to defense and not from leaf
+      if(links[i].to.includes("DEFENSE") && !links[i].from.includes("LEAF")) {
+        defenseFromLeaf = false;
+      }
+    }
+
+    //Nodes should equal edges + 1
+    if(linkCount != nodeCount-1) {
+      alertString += "Not a valid tree.\n";
+    }
+
+    if(safePathFound == false) {
+      alertString += "Must include a safe path.\n";
+    }
+
+    if(safeCount > 1) {
+      alertString += "The tree must contain only one safe path.\n";
+    }
+
+    if(leafCount != defenseCount) {
+      alertString += "Must have one defense node for each leaf node.\n"
+    }
+
+    if(rootCount > 1) {
+      alertString += "Tree may only include one root node.\n";
+    }
+
+    if(safePathFromRoot == false) {
+      alertString += "Safe path must be the child of the ROOT node.\n";
+    }
+
+    if (defenseFromLeaf == false) {
+      alertString += "Defense node must stem from a leaf node.\n";
+    }
+
+    if(alertString === "") {
       return true;
+    } else {
+      alert(alertString);
+      return false;
     }
   }
 
