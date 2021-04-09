@@ -1,5 +1,8 @@
 <form nz-form [formGroup]='validateForm' (ngSubmit)="submitForm()" nzLayout="vertical">
-    <h3>Diagram Variables</h3>
+    <h3>
+        Diagram Variables
+        <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip nzTooltipTitle="Global input variables applicable to the entire application"></i>
+    </h3>
 
     <nz-form-item>
         <nz-form-label nzSpan="24">Acceptable Risk Threshold: (%)</nz-form-label>

@@ -6,7 +6,6 @@ import * as go from 'gojs';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
 
-  // baseURL: string = "http://127.0.0.1:8000/api/hello-view/";
   attackURL :string = "http://127.0.0.1:8000/api/attack/";
   attackDefenseURL :string = "http://127.0.0.1:8000/api/attack-defense/";
   gameTheoryURL :string = "http://127.0.0.1:8000/api/game-theory/";
@@ -20,7 +19,15 @@ export class ApiService {
     return this.http.get<Array<go.ObjectData>>(this.attackURL)
   }
 
-  // example of a post request
+  /**
+   * Post method to back end for analyzing graph data
+   * @param selectedEngine 
+   * @param acceptableRiskThreshold 
+   * @param defenseBudget 
+   * @param nodeData 
+   * @param edgeData 
+   * @returns Analyzed results from the back end
+   */
   analyzeData(selectedEngine: string, acceptableRiskThreshold: number, defenseBudget: number, nodeData: go.ObjectData, edgeData: go.ObjectData): Observable<any> {
     const headers = { 'content-type': 'application/json' }
     const body = selectedEngine == 'Attack Tree' ? { 'selectedEngine': selectedEngine, 'acceptableRiskThreshold': acceptableRiskThreshold, 'nodeData': nodeData, 'edgeData': edgeData } :

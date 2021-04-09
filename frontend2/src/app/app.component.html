@@ -13,8 +13,11 @@
       </nz-option-group>
     </nz-select>
   </div>
-  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="analyzeData()"><i nz-icon nzType="sync" nzTheme="outline"></i>Analyze</button></div>
-  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="onDown('json', false)"><i nz-icon nzType="save" nzTheme="outline"></i>Save</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="analyzeData()"><i nz-icon nzType="sync"
+        nzTheme="outline"></i>Analyze</button></div>
+  <div nz-col><button nz-button nzType="primary" nzShape="round" (click)="onDown('json', false)"><i nz-icon
+        nzType="save" nzTheme="outline"></i>Save</button></div>
+  <!-- todo: complete import functionality. Should import graph json and generate appropriate graph -->
   <!-- <div nz-col>
     <nz-upload nzAccept=".json">
       <button nz-button nzType="primary" nzShape="round"><i nz-icon nzType="upload" nzTheme="outline"></i>Upload</button>
@@ -26,12 +29,16 @@
   <div nz-col nzSpan="4">
     <div nz-row [nzGutter]="[16, 16]">
       <div nz-col nzSpan="24">
-        <diagram-form [isDefense]="selectedEngine!=='attackTree'" (onFormChange)="handleGraphFormChange($event)"></diagram-form>
+        <diagram-form [isDefense]="selectedEngine!=='attackTree'" (onFormChange)="handleGraphFormChange($event)">
+        </diagram-form>
       </div>
       <div nz-col nzSpan="24">
-        <atk-tree-form *ngIf="selectedEngine==='attackTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-tree-form>
-        <atk-def-tree-form *ngIf="selectedEngine==='attackDefenseTree'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></atk-def-tree-form>    
-        <game-theory-form *ngIf="selectedEngine==='gameTheory'" [selectedNode]='selectedNode' (onFormChange)="handleInspectorChange($event)"></game-theory-form>    
+        <atk-tree-form *ngIf="selectedEngine==='attackTree'" [selectedNode]='selectedNode'
+          (onFormChange)="handleInspectorChange($event)"></atk-tree-form>
+        <atk-def-tree-form *ngIf="selectedEngine==='attackDefenseTree'" [selectedNode]='selectedNode'
+          (onFormChange)="handleInspectorChange($event)"></atk-def-tree-form>
+        <game-theory-form *ngIf="selectedEngine==='gameTheory'" [selectedNode]='selectedNode'
+          (onFormChange)="handleInspectorChange($event)"></game-theory-form>
       </div>
     </div>
   </div>
@@ -47,6 +54,7 @@
     </div>
   </div>
   <div nz-col nzSpan="4">
-    <data-visualization></data-visualization>
+    <data-visualization *ngIf="resultsToShow"></data-visualization>
   </div>
 </div>
+<help-button></help-button>

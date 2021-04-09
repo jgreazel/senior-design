@@ -1,5 +1,8 @@
 <form *ngIf="_selectedNode" nz-form [formGroup]='validateForm' (ngSubmit)="submitForm()" nzLayout="vertical">
-    <h3>Node Editor</h3>
+    <h3>Node Editor
+        <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip
+            nzTooltipTitle="Node specific input variables applicable only to the selected node"></i>
+    </h3>
     
     <nz-form-item>
         <nz-form-label nzSpan="24">Label:</nz-form-label>

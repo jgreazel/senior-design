@@ -48,7 +48,7 @@ export class AtkDefTreePaletteComponent {
     { key: 'ROOT_NODE', text: 'Root Node', color: 'purple', shape: 'orgate', impact: 0 },
     { key: 'LEAF', text: 'placeholderText', preDefenseProbability: 0, postDefenseProbability: 0, color: 'blue', shape: 'square', probability: 0, cost: 0 },
     { key: 'SAFE_PATH', text: 'Safe Path', probability: 0, color: 'lightblue', shape: 'square' },
-    { key: 'DEFENSE_NODE', text: 'Defense', defenseCost: 0, color: 'yellow', shape: 'circle' }
+    { key: 'DEFENSE_NODE', text: 'Defense', defenseCost: 0, cost: 0, color: 'yellow', shape: 'circle' }
   ];
 
   public paletteNodeData: Array<go.ObjectData> = this.atkTreePalette;
