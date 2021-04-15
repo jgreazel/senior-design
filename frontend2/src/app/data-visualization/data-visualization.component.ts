@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
+// TODO: Rename - this is attack defense 
 
 
 
@@ -8,34 +8,24 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './data-visualization.component.html',
   styleUrls: ['./data-visualization.component.css']
 })
-export class DataVisualizationComponent implements OnInit {
-
-  public dummyData = {
-    "cost": 400,
-    "defendedAttacks": ["LEAF", "LEAF1", "LEAF2"],
-    "attackScenarios": [
-      {
-      "risk": 45,
-      "predefenseRisk": 45,
-      "attacks": ["LEAF", "LEAF1", "LEAF2", "LEAF3","LEAF2", "LEAF3", "LEAF2", "LEAF3"]
-      },
-      {
-      "risk": 40,
-      "predefenseRisk": 45,
-      "attacks": ["LEAF", "LEAF1", "LEAF2"]
-      },
-      {
-      "risk": 35,
-      "predefenseRisk": 45,
-      "attacks": ["LEAF", "LEAF1", "LEAF2"]
-      }
-    ]
-  }
+export class DataVisualizationComponent implements OnInit, OnChanges {
+  @Input() data:any;
+  public ourData:any;
 
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.dummyData);
+    console.log(this.data);
+    this.ourData = JSON.parse(this.data);
+    this.ourData.attackScenarios.forEach(element => (element as string).slice(0,5));
+    console.log("this one " + this.ourData);
+  }
+
+  ngOnChanges() {
+    this.ourData = JSON.parse(this.data);
+    this.ourData.attackScenarios.forEach(element => (element as string).slice(0,5));
+    console.log("--onchages--")
+    console.log(this.ourData + " \nOURS " + this.ourData.cost)
   }
 
 }

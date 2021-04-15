@@ -54,7 +54,7 @@
     </div>
   </div>
   <div nz-col nzSpan="4">
-    <data-visualization *ngIf="resultsToShow"></data-visualization>
+    <data-visualization [data]="ourData" *ngIf="resultsToShow"></data-visualization>
   </div>
 </div>
 <help-button></help-button>

@@ -21,6 +21,7 @@ export class AppComponent implements AfterViewInit {
   public acceptableRiskThreshold = 0;
   public defenseBudget = 0;
   public resultsToShow = false;
+  public ourData = null;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -45,8 +46,9 @@ export class AppComponent implements AfterViewInit {
         .subscribe(data => {
           //do something meaningful with data here once connected to BE
           console.log(data);
+          this.ourData = data;
+          this.resultsToShow = true;
         })
-      this.resultsToShow = true;
     }
   }
 
