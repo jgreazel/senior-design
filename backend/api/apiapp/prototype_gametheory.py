@@ -11,8 +11,8 @@ class Scenario:
     ----------
     probability : float
         probability of scenario occurring, 0-1
-    nodeKeys : [str]
-        list of node keys, each key represented by a string
+    nodes : [Node]
+        list of nodes, each node represented as an object
 
     Methods
     -------
@@ -20,9 +20,9 @@ class Scenario:
         Combines scenario2 with self
     """
 
-    def __init__(self, probability, cost, nodeKeys):
+    def __init__(self, probability, cost, nodes):
         """
-        Initializes a scenario with the given probability and nodeKeys.
+        Initializes a scenario with the given probability and nodes.
 
         Parameters
         ----------
@@ -30,12 +30,12 @@ class Scenario:
             The scenario's probability of occurring
         cost : float
             The scenario's cost
-        nodeKeys : [str]
+        nodes : [Node]
             The list of nodes in the scenario
         """
         self.probability = float(probability)
         self.cost = float(cost)
-        self.nodeKeys = nodeKeys
+        self.nodes = nodes
 
     def __str__(self):
         """Returns nodes in scenario"""
@@ -48,8 +48,8 @@ class Scenario:
             + cost
             + "\t: "
         )
-        for key in self.nodeKeys:
-            output += key + " "
+        for node in self.nodes:
+            output += node["text"] + " "
         return output
 
     def get_cost(self):
@@ -66,16 +66,24 @@ class Scenario:
         """
         prob = self.probability * scenario2.probability
         cost = self.probability * self.cost + scenario2.probability * scenario2.cost
-        keys = list(())
-        for key in self.nodeKeys:
-            keys.append(key)
-        for key in scenario2.nodeKeys:
-            keys.append(key)
-        return Scenario(prob, cost, keys)
+        nodes = list(())
+        for node in self.nodes:
+            nodes.append(node)
+        for node in scenario2.nodes:
+            nodes.append(node)
+        return Scenario(prob, cost, nodes)
     
     def get_scenario(self):
-        return {"cost": self.cost, "probability": self.probability, "nodes": self.nodeKeys}
-
+        """
+        Returns scenario with node keys.
+        """
+        return {"cost": self.cost, "probability": self.probability, "nodes": self.nodes}
+    
+    def get_scenario_text(self):
+        """
+        Returns scenario with node text.
+        """
+        return {"cost": self.cost, "probability": self.probability, "nodes": [node["text"] for node in self.nodes]}
 
 def normalize(nodesList):
     """
@@ -162,12 +170,12 @@ def findScenarios(nodesList, edgesList, node):
     if node["key"][0] == "L":  # If leaf node
         scenarioList = list(())
         defenseList = list(())
-        scenarioList.append(Scenario(node["probability"], node["cost"], [node["key"]]))
+        scenarioList.append(Scenario(node["probability"], node["cost"], [node]))
         defense = findChildren(nodesList, edgesList, node)
         if len(defense) > 0:
             defenseList.append(
                 Scenario(
-                    1, defense[0]["cost"], [defense[0]["key"]]
+                    1, defense[0]["cost"], [defense[0]]
                 )
             )
         return scenarioList, defenseList
@@ -467,16 +475,16 @@ def backendRequest(frontendJson):
     for (idx, probability) in enumerate(scenarioRecommendedProbability):
         if probability > 0:
             nodes = defenseScenarios[idx]["nodes"]
-            totalCost = sum([findNode(nodesList, node)["cost"] for node in nodes])
+            totalCost = sum([findNode(nodesList, node["key"])["cost"] for node in nodes])
             for node in nodes:
-                n = findNode(nodesList, node)
-                investment = n["cost"]/totalCost * probability * defenseBudget
-                recommendedInvestments.append({"node": node, "investment": investment})
+                n = findNode(nodesList, node["key"])
+                investment = min(n["cost"], n["cost"]/totalCost * probability * defenseBudget)
+                recommendedInvestments.append({"node": node["text"], "investment": investment})
 
     return_object = {
         "recommendedInvestments": recommendedInvestments,
-        "attackScenarios": [scenario.get_scenario() for scenario in scenarios],
-        "defenseScenarios": defenseScenarios,
+        "attackScenarios": [scenario.get_scenario_text() for scenario in scenarios],
+        "defenseScenarios": [scenario.get_scenario_text() for scenario in defenses],
         "payoffMatrix": payoff_matrix,
         "nashEquilibria": listEqs
     }
