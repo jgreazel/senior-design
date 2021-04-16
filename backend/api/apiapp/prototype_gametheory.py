@@ -441,6 +441,7 @@ def backendRequest(frontendJson):
 
     nodesList = jsonData["nodeData"]
     edgesList = jsonData["edgeData"]
+    defenseBudget = jsonData["defenseBudget"]
 
     normalize(nodesList)
 
@@ -458,11 +459,24 @@ def backendRequest(frontendJson):
         for arr in eq:
             json_arr.append(arr.tolist())
         listEqs.append(json_arr)
-    print(listEqs)
+    listEqs = listEqs[0]
+
+    defenseScenarios = [defense.get_scenario() for defense in defenses]
+    scenarioRecommendedProbability = listEqs[1]
+    recommendedInvestments = []
+    for (idx, probability) in enumerate(scenarioRecommendedProbability):
+        if probability > 0:
+            nodes = defenseScenarios[idx]["nodes"]
+            totalCost = sum([findNode(nodesList, node)["cost"] for node in nodes])
+            for node in nodes:
+                n = findNode(nodesList, node)
+                investment = n["cost"]/totalCost * probability * defenseBudget
+                recommendedInvestments.append({"node": node, "investment": investment})
 
     return_object = {
+        "recommendedInvestments": recommendedInvestments,
         "attackScenarios": [scenario.get_scenario() for scenario in scenarios],
-        "defenseScenarios": [defense.get_scenario() for defense in defenses],
+        "defenseScenarios": defenseScenarios,
         "payoffMatrix": payoff_matrix,
         "nashEquilibria": listEqs
     }

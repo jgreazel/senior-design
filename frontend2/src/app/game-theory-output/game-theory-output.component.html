@@ -1,4 +1,11 @@
 <div>
+    <h3>Recommended Investment</h3>
+    <nz-collapse>
+        <nz-collapse-panel *ngFor="let investments of ourData.recommendedInvestments" [nzHeader]="'Node'">
+            <p>Node: {{ investments.node }}</p>
+            <p>Investment: {{ investments.investment }}</p>
+        </nz-collapse-panel>
+    </nz-collapse>
     <h3>Attack Scenarios</h3>
     <nz-collapse>
         <nz-collapse-panel *ngFor="let scenarios of ourData.attackScenarios" [nzHeader]="'Attacked Leaves'">
@@ -25,7 +32,7 @@
         </nz-collapse-panel>
     </nz-collapse> 
     <br>
-    <h3>Nash Matricies</h3>
+    <h3>Nash Matrices</h3>
     <nz-collapse>
         <nz-collapse-panel [nzHeader]="'Payoff Matrix'">
             <nz-list nzBordered>
