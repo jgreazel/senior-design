@@ -2,11 +2,11 @@ import { Component, Input, OnInit, OnChanges } from '@angular/core';
 // TODO: Rename - this is attack defense 
 
 @Component({
-  selector: 'data-visualization',
-  templateUrl: './data-visualization.component.html',
-  styleUrls: ['./data-visualization.component.css']
+  selector: 'game-theory-output',
+  templateUrl: './game-theory-output.component.html',
+  styleUrls: ['./game-theory-output.component.css']
 })
-export class DataVisualizationComponent implements OnInit, OnChanges {
+export class GameTheoryOutputComponent implements OnInit , OnChanges {
   @Input() data:any;
   public ourData:any;
 

@@ -54,7 +54,9 @@
     </div>
   </div>
   <div nz-col nzSpan="4">
-    <data-visualization *ngIf="resultsToShow"></data-visualization>
+    <attack-tree-output [data]="ourData" *ngIf="selectedEngine==='attackTree' && resultsToShow"></attack-tree-output>
+    <data-visualization [data]="ourData" *ngIf="selectedEngine==='attackDefenseTree' && resultsToShow"></data-visualization>
+    <game-theory-output [data]="ourData" *ngIf="selectedEngine==='gameTheory' && resultsToShow"></game-theory-output>
   </div>
 </div>
 <help-button></help-button>
