@@ -1,8 +1,6 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core';
 // TODO: Rename - this is attack defense 
 
-
-
 @Component({
   selector: 'data-visualization',
   templateUrl: './data-visualization.component.html',
