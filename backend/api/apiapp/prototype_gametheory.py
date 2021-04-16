@@ -1,5 +1,6 @@
 import codecs, json
 import sys
+import itertools
 import nashpy as nash
 
 
@@ -16,8 +17,8 @@ class Scenario:
 
     Methods
     -------
-    combine(scenario2)
-        Combines scenario2 with self
+    combine([scenarios])
+        Combines list of scenarios with self
     """
 
     def __init__(self, probability, cost, nodes):
@@ -41,13 +42,7 @@ class Scenario:
         """Returns nodes in scenario"""
         prob = str(round(self.probability, 4))
         cost = str(round(self.cost, 2))
-        output = (
-            "prob: "
-            + prob
-            + "  \tcost: "
-            + cost
-            + "\t: "
-        )
+        output = "prob: " + prob + "  \tcost: " + cost + "\t: "
         for node in self.nodes:
             output += node["text"] + " "
         return output
@@ -55,35 +50,43 @@ class Scenario:
     def get_cost(self):
         return self.cost
 
-    def combine(self, scenario2):
+    def combine(self, scenarios):
         """
         Combine scenarios. Used in AND nodes.
 
         Parameters
         ----------
-        scenario2 : Scenario
-            The scenario to combine
+        scenarios : [Scenario]
+            The scenarios to combine
         """
-        prob = self.probability * scenario2.probability
-        cost = self.probability * self.cost + scenario2.probability * scenario2.cost
+        prob = self.probability
+        cost = self.probability * self.cost
         nodes = list(())
         for node in self.nodes:
             nodes.append(node)
-        for node in scenario2.nodes:
-            nodes.append(node)
+        for scenario in scenarios:
+            prob *= scenario.probability
+            cost += scenario.probability * scenario.cost
+            for node in scenario.nodes:
+                nodes.append(node)
         return Scenario(prob, cost, nodes)
-    
+
     def get_scenario(self):
         """
         Returns scenario with node keys.
         """
         return {"cost": self.cost, "probability": self.probability, "nodes": self.nodes}
-    
+
     def get_scenario_text(self):
         """
         Returns scenario with node text.
         """
-        return {"cost": self.cost, "probability": self.probability, "nodes": [node["text"] for node in self.nodes]}
+        return {
+            "cost": self.cost,
+            "probability": self.probability,
+            "nodes": [node["text"] for node in self.nodes],
+        }
+
 
 def normalize(nodesList):
     """
@@ -173,17 +176,12 @@ def findScenarios(nodesList, edgesList, node):
         scenarioList.append(Scenario(node["probability"], node["cost"], [node]))
         defense = findChildren(nodesList, edgesList, node)
         if len(defense) > 0:
-            defenseList.append(
-                Scenario(
-                    1, defense[0]["cost"], [defense[0]]
-                )
-            )
+            defenseList.append(Scenario(1, defense[0]["cost"], [defense[0]]))
         return scenarioList, defenseList
     elif node["key"][0] == "O":  # If OR node
         scenarioList = list(())
         defenseList = list(())
 
-        tempList = list(())
         childDefenseLists = list(())
 
         children = findChildren(nodesList, edgesList, node)
@@ -192,21 +190,17 @@ def findScenarios(nodesList, edgesList, node):
             childDefenseLists.append(childDefenses)
             for scenario in childScenarios:
                 scenarioList.append(scenario)
-        defenseScenarioList = childDefenseLists[0]
-        for i in range(
-            1, len(childDefenseLists)
-        ):  # Compare all combinations of scenarios
-            for scenario1 in defenseScenarioList:
-                for scenario2 in childDefenseLists[i]:
-                    tempList.append(scenario1.combine(scenario2))
-            defenseList = tempList
-            tempList = list(())
+
+        combinations = [list(tup) for tup in itertools.product(*childDefenseLists)]
+        for combo in combinations:
+            c0 = combo.pop()
+            defenseList.append(c0.combine(combo))
+
         return scenarioList, defenseList
     elif node["key"][0] == "A":  # If AND node
         scenarioList = list(())
         defenseList = list(())
 
-        tempList = list(())
         childLists = list(())  # List of lists
 
         children = findChildren(nodesList, edgesList, node)
@@ -216,12 +210,11 @@ def findScenarios(nodesList, edgesList, node):
             for defense in childDefenses:
                 defenseList.append(defense)
         scenarioList = childLists[0]
-        for i in range(1, len(childLists)):  # Compare all combinations of scenarios
-            for scenario1 in scenarioList:
-                for scenario2 in childLists[i]:
-                    tempList.append(scenario1.combine(scenario2))
-            scenarioList = tempList
-            tempList = list(())
+
+        combinations = [list(tup) for tup in itertools.product(*childLists)]
+        for combo in combinations:
+            c0 = combo.pop()
+            scenarioList.append(c0.combine(combo))
         return scenarioList, defenseList
     else:
         print("Error:: Could not determine node type")
@@ -444,22 +437,25 @@ jsonTest = """
 # eqs = nasheq(5, attackCosts, costs)
 # print(list(eqs))
 
+
 def backendRequest(frontendJson):
     jsonData = json.loads(frontendJson)
 
     nodesList = jsonData["nodeData"]
     edgesList = jsonData["edgeData"]
+    impact = findNode(nodesList, "ROOT_NODE")["impact"]
     defenseBudget = jsonData["defenseBudget"]
 
     normalize(nodesList)
 
-    scenarios, defenses = findScenarios(nodesList, edgesList, findAttackRoot(nodesList, edgesList))
-
+    scenarios, defenses = findScenarios(
+        nodesList, edgesList, findAttackRoot(nodesList, edgesList)
+    )
 
     attackCosts = [scenario.get_cost() for scenario in scenarios]
     defenseCosts = [defense.get_cost() for defense in defenses]
 
-    eqs, payoff_matrix = nasheq(5, attackCosts, defenseCosts)
+    eqs, payoff_matrix = nasheq(impact, attackCosts, defenseCosts)
 
     listEqs = []
     for eq in eqs:
@@ -475,20 +471,26 @@ def backendRequest(frontendJson):
     for (idx, probability) in enumerate(scenarioRecommendedProbability):
         if probability > 0:
             nodes = defenseScenarios[idx]["nodes"]
-            totalCost = sum([findNode(nodesList, node["key"])["cost"] for node in nodes])
+            totalCost = sum(
+                [findNode(nodesList, node["key"])["cost"] for node in nodes]
+            )
             for node in nodes:
                 n = findNode(nodesList, node["key"])
-                investment = min(n["cost"], n["cost"]/totalCost * probability * defenseBudget)
-                recommendedInvestments.append({"node": node["text"], "investment": investment})
+                # Use node cost if below budget, weighted node cost otherwise
+                investment = min(
+                    n["cost"], n["cost"] / totalCost * probability * defenseBudget
+                )
+                recommendedInvestments.append(
+                    {"node": node["text"], "investment": investment}
+                )
 
     return_object = {
         "recommendedInvestments": recommendedInvestments,
         "attackScenarios": [scenario.get_scenario_text() for scenario in scenarios],
         "defenseScenarios": [scenario.get_scenario_text() for scenario in defenses],
         "payoffMatrix": payoff_matrix,
-        "nashEquilibria": listEqs
+        "nashEquilibria": listEqs,
     }
     returnJson = json.dumps(return_object)
-
 
     return returnJson
