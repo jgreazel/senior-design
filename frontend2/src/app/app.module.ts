@@ -38,6 +38,7 @@ import { DataVisualizationComponent } from './data-visualization/data-visualizat
 import { GameTheoryFormComponent } from './game-theory-form/game-theory-form.component';
 import { HelpButtonComponent } from './help-button/help-button.component';
 import { AttackTreeOutputComponent } from './attack-tree-output/attack-tree-output.component';
+import { GameTheoryOutputComponent } from './game-theory-output/game-theory-output.component';
 
 registerLocaleData(en);
 
@@ -55,7 +56,8 @@ const icons: IconDefinition[] = [SyncOutline, DeleteOutline, SaveOutline, Upload
     DataVisualizationComponent,
     GameTheoryFormComponent,
     HelpButtonComponent,
-    AttackTreeOutputComponent
+    AttackTreeOutputComponent,
+    GameTheoryOutputComponent
   ],
   imports: [
     BrowserModule,
