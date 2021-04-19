@@ -1,5 +1,9 @@
 <div>
-    <h3>Attack Scenarios</h3>
+  <h2>Output
+    <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip nzTooltipTitle="Attack Tree output displays risk and probability for all of the attack scenarios."></i>
+  </h2>
+    <h3>Attack Scenarios
+    </h3>
     <nz-collapse>
         <nz-collapse-panel *ngFor="let scenarios of ourData" [nzHeader]="'Scenarios'">
             <p>Risk: {{ scenarios.risk }}</p>
@@ -10,5 +14,5 @@
                 </nz-list-item>
             </nz-list>
         </nz-collapse-panel>
-    </nz-collapse> 
+    </nz-collapse>
 </div>
