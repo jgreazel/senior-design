@@ -101,9 +101,14 @@ class ADTAnalysis:
 
   def toDict(self):
     """Returns dictionary representation of ADTAnalysis (information not already in given JSON)"""
+    defendedNodes = []
+    for key in self.investedNodes:
+        for node in self.nodesList:
+          if node["key"] == key:
+            defendedNodes.append([key, node["text"]])
     dit = {
       "cost" : (self.budget - self.budgetLeft),
-      "defendedAttacks" : self.investedNodes,
+      "defendedAttacks" : defendedNodes,
       "attackScenarios" : []
     }
     for scenario in self.scenarios:
