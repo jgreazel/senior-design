@@ -1,3 +1,4 @@
+from api.apiapp.prototype_gametheory import findNode
 import json
 import sys
 
@@ -32,7 +33,7 @@ class Scenario:
         """
         self.probability = float(probability)
         self.nodeKeys = nodeKeys
-
+    '''
     def __str__(self):
         """Returns nodes in scenario"""
         # TODO: Check output with deeper tree
@@ -42,16 +43,20 @@ class Scenario:
         for key in self.nodeKeys:
             output += key + " "
         return output
-
-    def toDict(self,treeRoot):
+    '''
+    def toDict(self,treeRoot,nodesList):
         """Returns dictionary representation of scenario"""
         risk = round(float(treeRoot["impact"]) * self.probability, 4)
         prob = round(self.probability, 4)
         leafKeys = self.nodeKeys
+        keyTextPairs = []
+        for key in leafKeys:
+          node = findNode(key,nodesList)
+          keyTextPairs.append([key, node["text"]])
         dit = {
           "risk" : risk,
           "probability" : prob,
-          "leafKeys" : leafKeys
+          "leafKeys" : keyTextPairs
         }
         return dit
 
@@ -344,7 +349,7 @@ def api_request(frontend_json):
     scenList = []
     if(scenarios != None):
       for scen in scenarios:
-          scenList.append(scen.toDict(treeRoot))
+          scenList.append(scen.toDict(treeRoot,nodesList))
 
     sendToFrontendJson = json.dumps(scenList)
     return sendToFrontendJson
