@@ -1,4 +1,7 @@
 <div>
+  <h2>Output
+    <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip nzTooltipTitle="Game Theory output displays information on recommended investments, attack scenarios, defense scenarios, as well as the nash equilibria and payoff matrices."></i>
+  </h2>
     <h3>Recommended Investment</h3>
     <nz-collapse>
         <nz-collapse-panel *ngFor="let investments of ourData.recommendedInvestments" [nzHeader]="'Node'">
@@ -17,7 +20,7 @@
                 </nz-list-item>
             </nz-list>
         </nz-collapse-panel>
-    </nz-collapse> 
+    </nz-collapse>
     <br>
     <h3>Defense Scenarios</h3>
     <nz-collapse>
@@ -30,7 +33,7 @@
                 </nz-list-item>
             </nz-list>
         </nz-collapse-panel>
-    </nz-collapse> 
+    </nz-collapse>
     <br>
     <h3>Nash Matrices</h3>
     <nz-collapse>
