@@ -25,7 +25,9 @@ export class HelpButtonComponent implements OnInit {
       <img src="assets/basicTreeStructure.jpg" width="315">
       <h4>Choosing your Analytical Engine</h4>
       <p>CySec Game provides three analytical engines: Attack Tree, Attack-Defense Tree, and Game Theory. Use the engine selector to choose.</p>
-      <img src="assets/engineSelector.jpg" width="200">`
+      <img src="assets/engineSelector.jpg" width="200">
+      <p>When you've completed your tree and saved variables for every node click the 'Analyze' button and await your results</p>`
+
     })
   }
 

@@ -1,9 +1,10 @@
 <div>
-  <h2>Output
-    <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip nzTooltipTitle="Attack Defense Tree output displays defended attacks, as well as risk for all of the attack scenarios."></i>
-  </h2>
+    <h2>Output
+        <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip
+            nzTooltipTitle="Attack Defense Tree output displays defended attacks, as well as risk for all of the attack scenarios."></i>
+    </h2>
     <h3>Cost to Defend</h3>
-        <p>{{ '$'+ourData.cost }}</p>
+    <p>{{ '$'+ourData.cost }}</p>
     <h3>Defended Attacks</h3>
     <nz-collapse>
         <nz-collapse-panel [nzHeader]="'Defended Attacks'">
@@ -14,11 +15,12 @@
             </nz-list>
         </nz-collapse-panel>
     </nz-collapse>
-    <br/>
+    <br />
     <h3>Attack Scenarios</h3>
     <nz-collapse>
         <nz-collapse-panel *ngFor="let scenarios of ourData.attackScenarios" [nzHeader]="'Attacked Leaves'">
             <p>Risk: {{ scenarios.risk }}</p>
+            <p>Pre-Defense Risk: {{ scenarios.preDefenseRisk }}</p>
             <nz-list nzBordered>
                 <nz-list-item *ngFor="let item of scenarios.attacks">
                     {{ item[1] }}
