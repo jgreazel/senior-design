@@ -3,7 +3,7 @@
     <h1>CySec Game</h1>
   </div>
   <div nz-col>
-    <nz-select [(ngModel)]="selectedEngine">
+    <nz-select [(ngModel)]="selectedEngine" (ngModelChange)="clickEngineSelect()">
       <nz-option-group nzLabel="Attack Tree">
         <nz-option nzValue="attackTree" nzLabel="Attack Tree"></nz-option>
       </nz-option-group>
@@ -55,7 +55,8 @@
   </div>
   <div nz-col nzSpan="4">
     <attack-tree-output [data]="ourData" *ngIf="selectedEngine==='attackTree' && resultsToShow"></attack-tree-output>
-    <data-visualization [data]="ourData" *ngIf="selectedEngine==='attackDefenseTree' && resultsToShow"></data-visualization>
+    <data-visualization [data]="ourData" *ngIf="selectedEngine==='attackDefenseTree' && resultsToShow">
+    </data-visualization>
     <game-theory-output [data]="ourData" *ngIf="selectedEngine==='gameTheory' && resultsToShow"></game-theory-output>
   </div>
 </div>

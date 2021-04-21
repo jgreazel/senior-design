@@ -52,6 +52,11 @@ export class AppComponent implements AfterViewInit {
     }
   }
 
+  clickEngineSelect() {
+    this.resultsToShow = false;
+    console.log(this.resultsToShow)
+  }
+
   /**
    * On initialization this component finds the diagram component and attaches a listener.
    * This listener is triggered when a different diagram node is selected; it then sets that node to selectedNode for the inspectors.
