@@ -1,0 +1,55 @@
+<div>
+  <h2>Output
+    <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip nzTooltipTitle="Game Theory output displays information on recommended investments, attack scenarios, defense scenarios, as well as the nash equilibria and payoff matrices."></i>
+  </h2>
+    <h3>Recommended Investment</h3>
+    <nz-collapse>
+        <nz-collapse-panel *ngFor="let investments of ourData.recommendedInvestments" [nzHeader]="'Node'">
+            <p>Node: {{ investments.node }}</p>
+            <p>Investment: {{ investments.investment }}</p>
+        </nz-collapse-panel>
+    </nz-collapse>
+    <h3>Attack Scenarios</h3>
+    <nz-collapse>
+        <nz-collapse-panel *ngFor="let scenarios of ourData.attackScenarios" [nzHeader]="'Attacked Leaves'">
+            <p>Cost: {{ scenarios.cost }}</p>
+            <p>Probability: {{ scenarios.probability }}</p>
+            <nz-list nzBordered>
+                <nz-list-item *ngFor="let item of scenarios.nodes">
+                    {{ item }}
+                </nz-list-item>
+            </nz-list>
+        </nz-collapse-panel>
+    </nz-collapse>
+    <br>
+    <h3>Defense Scenarios</h3>
+    <nz-collapse>
+        <nz-collapse-panel *ngFor="let scenarios of ourData.defenseScenarios" [nzHeader]="'Defended Leaves'">
+            <p>Cost: {{ scenarios.cost }}</p>
+            <p>Probability: {{ scenarios.probability }}</p>
+            <nz-list nzBordered>
+                <nz-list-item *ngFor="let item of scenarios.nodes">
+                    {{ item }}
+                </nz-list-item>
+            </nz-list>
+        </nz-collapse-panel>
+    </nz-collapse>
+    <br>
+    <h3>Nash Matrices</h3>
+    <nz-collapse>
+        <nz-collapse-panel [nzHeader]="'Payoff Matrix'">
+            <nz-list nzBordered>
+                <nz-list-item *ngFor="let item of ourData.payoffMatrix">
+                    {{ item }}
+                </nz-list-item>
+            </nz-list>
+        </nz-collapse-panel>
+        <nz-collapse-panel [nzHeader]="'Nash Equilibria'">
+            <nz-list nzBordered>
+                <nz-list-item *ngFor="let item of ourData.nashEquilibria">
+                    {{ item }}
+                </nz-list-item>
+            </nz-list>
+        </nz-collapse-panel>
+    </nz-collapse>
+</div>

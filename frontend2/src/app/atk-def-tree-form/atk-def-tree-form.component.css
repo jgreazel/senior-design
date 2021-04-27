@@ -1,0 +1,10 @@
+form {
+    padding: 10px;
+    background: #999999;
+    width: 100%;
+    border-radius: 4px;
+}
+
+input {
+    max-width: 200px;
+}

@@ -1,0 +1,26 @@
+<form nz-form [formGroup]='validateForm' (ngSubmit)="submitForm()" nzLayout="vertical">
+    <h3>
+        Diagram Variables
+        <i nz-icon nzType="info-circle" nzTheme="twotone" nz-tooltip nzTooltipTitle="Global input variables applicable to the entire application"></i>
+    </h3>
+
+    <nz-form-item>
+        <nz-form-label nzSpan="24">Acceptable Risk Threshold: (%)</nz-form-label>
+        <nz-form-control nzErrorTip="Threshold is required">
+            <nz-input-number nzMin="0" nzMax="100" formControlName="acceptableRiskThreshold"></nz-input-number>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="isDefense">
+        <nz-form-label nzSpan="24">Defense Budget: ($)</nz-form-label>
+        <nz-form-control nzErrorTip="Budget is required">
+            <nz-input-number nzMin="0" formControlName="defenseBudget"></nz-input-number>
+        </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+        <nz-form-control>
+            <button nz-button nzType="primary" nzShape="round">Save Changes</button>
+        </nz-form-control>
+    </nz-form-item>
+</form>
